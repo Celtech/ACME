@@ -2,26 +2,33 @@ package certbot
 
 import (
 	"fmt"
+	"log"
 	"os"
+	"time"
 
 	"github.com/go-acme/lego/v4/challenge"
+	"github.com/go-acme/lego/v4/challenge/dns01"
 	"github.com/go-acme/lego/v4/challenge/http01"
 	"github.com/go-acme/lego/v4/challenge/tlsalpn01"
+	"github.com/go-acme/lego/v4/providers/dns"
+
 	"github.com/go-acme/lego/v4/lego"
 )
 
 func SetupChallenges(client *lego.Client) {
 	fmt.Println("Starting HTTP and TLS challenge servers")
 
-	err := client.Challenge.SetHTTP01Provider(setupHTTPProvider())
-	if err != nil {
-		fmt.Println(err.Error())
-	}
+	// err := client.Challenge.SetHTTP01Provider(setupHTTPProvider())
+	// if err != nil {
+	// 	fmt.Println(err.Error())
+	// }
 
 	// errTLS := client.Challenge.SetTLSALPN01Provider(setupTLSProvider())
 	// if errTLS != nil {
 	// 	fmt.Println(errTLS.Error())
 	// }
+
+	setupDNSProvider(client)
 }
 
 func setupHTTPProvider() challenge.Provider {
@@ -61,4 +68,23 @@ func setupTLSProvider() challenge.Provider {
 	fmt.Printf("TLS challenge server listening on %s:%s\n", tlsHost, tlsPort)
 
 	return tlsalpn01.NewProviderServer(tlsHost, tlsPort)
+}
+
+func setupDNSProvider(client *lego.Client) {
+	provider, err := dns.NewDNSChallengeProviderByName("dnsmadeeasy")
+	if err != nil {
+		log.Fatalf(err.Error())
+	}
+
+	err = client.Challenge.SetDNS01Provider(provider,
+		// dns01.CondOption(len(servers) > 0,
+		// 	dns01.AddRecursiveNameservers(dns01.ParseNameservers(ctx.StringSlice("dns.resolvers")))),
+		dns01.CondOption(true,
+			dns01.DisableCompletePropagationRequirement()),
+		dns01.CondOption(true,
+			dns01.AddDNSTimeout(time.Duration(60)*time.Second)),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
