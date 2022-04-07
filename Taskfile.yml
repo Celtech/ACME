@@ -3,12 +3,12 @@ version: '3'
 tasks:
   build:docker:
     cmds:
-      - cmd: docker buildx rm ssl_builder # just in case task was exited early
+      - cmd: docker buildx rm acme_builder # just in case task was exited early by the user
         ignore_error: true
-      - cmd: docker buildx create --name ssl_builder --use
+      - cmd: docker buildx create --name acme_builder --use
         ignore_error: true
-      - cmd: docker buildx build --push --platform linux/amd64 -t timhinz/ssl-testing:latest -f docker/Dockerfile .
+      - cmd: docker buildx build --push --platform linux/amd64 -t git.rykelabs.com:5050/rykelabs/acme-server:latest -f docker/Dockerfile .
         ignore_error: true
-      - cmd: docker buildx rm ssl_builder
+      - cmd: docker buildx rm acme_builder
         ignore_error: true
     silent: false
