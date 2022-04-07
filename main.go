@@ -28,9 +28,12 @@ func init() {
 }
 
 func checkCertificate(w http.ResponseWriter, req *http.Request) {
-	domainName := domain.ParseDomainName(req.Host)
-	fmt.Fprintf(w, fmt.Sprintf("Checking %s", domainName))
+	domainName, err := domain.ParseDomainName(req.Host)
+	if err != nil {
+		log.Fatalln(err.Error())
+	}
 
+	fmt.Fprintf(w, "Checking %s", domainName)
 	certbot.Run(w, domainName)
 }
 
@@ -47,28 +50,33 @@ func (t req) Protocol() string {
 
 func main() {
 	log.Println("Starting server")
+
 	http.HandleFunc("/request", checkCertificate)
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		domainName, err := domain.ParseDomainName(r.Host)
+		if err != nil {
+			log.Fatalln(err.Error())
+		}
+
 		fmt.Fprintln(w, `                                                                                  
- ██████ ██   ██  █████  ██████   ██████  ███████  ██████  ██    ██ ███████ ██████  
-██      ██   ██ ██   ██ ██   ██ ██       ██      ██    ██ ██    ██ ██      ██   ██ 
-██      ███████ ███████ ██████  ██   ███ █████   ██    ██ ██    ██ █████   ██████  
-██      ██   ██ ██   ██ ██   ██ ██    ██ ██      ██    ██  ██  ██  ██      ██   ██ 
- ██████ ██   ██ ██   ██ ██   ██  ██████  ███████  ██████    ████   ███████ ██   ██`)
-		fmt.Fprintln(w, "┌────────────┬───────────────────┬───────────────────────────────────────────────┐")
-		fmt.Fprintln(w, fmt.Sprintf("│ Status: OK │ Uptime: %s │                                               │", uptime()))
-		fmt.Fprintln(w, "└────────────┴───────────────────┴───────────────────────────────────────────────┘\r\n")
+  ██████ ██   ██  █████  ██████   ██████  ███████  ██████  ██    ██ ███████ ██████  
+ ██      ██   ██ ██   ██ ██   ██ ██       ██      ██    ██ ██    ██ ██      ██   ██ 
+ ██      ███████ ███████ ██████  ██   ███ █████   ██    ██ ██    ██ █████   ██████  
+ ██      ██   ██ ██   ██ ██   ██ ██    ██ ██      ██    ██  ██  ██  ██      ██   ██ 
+  ██████ ██   ██ ██   ██ ██   ██  ██████  ███████  ██████    ████   ███████ ██   ██`)
+		fmt.Fprintf(w, "┌─                                                                                ─┐\r\n")
+		fmt.Fprintf(w, "  Status: OK │ Uptime: %s │ Host: %s \r\n", uptime(), domainName)
+		fmt.Fprintf(w, "└─                                                                                ─┘\r\n\r\n")
 
 		fmt.Fprintln(w, "Usage:")
-		fmt.Fprintln(w, fmt.Sprintf("# GET - %s://%s/request", req(*r).Protocol(), r.Host))
-		fmt.Fprintln(w, "Used to request a new SSL certificate for a given domain.\r\n")
+		fmt.Fprintf(w, "# GET - %s://%s/request\r\n", req(*r).Protocol(), r.Host)
+		fmt.Fprintf(w, "Used to request a new SSL certificate for a given domain.\r\n\r\n")
 
-		fmt.Fprintln(w, fmt.Sprintf("# GET - %s://%s/check", req(*r).Protocol(), r.Host))
-		fmt.Fprintln(w, "Used to fetch the expiration date of a SSL certificate a given domain.\r\n")
+		fmt.Fprintf(w, "# GET - %s://%s/check\r\n", req(*r).Protocol(), r.Host)
+		fmt.Fprintf(w, "Used to fetch the expiration date of a SSL certificate a given domain.\r\n\r\n")
 
-		fmt.Fprintln(w, fmt.Sprintf("# GET - %s://%s/renew", req(*r).Protocol(), r.Host))
-		fmt.Fprintln(w, "Used to force renew a SSL certificate for a given domain.\r\n")
-
+		fmt.Fprintf(w, "# GET - %s://%s/renew\r\n", req(*r).Protocol(), r.Host)
+		fmt.Fprintf(w, "Used to force renew a SSL certificate for a given domain.\r\n")
 	})
 
 	if err := http.ListenAndServe(":9022", nil); err != nil {

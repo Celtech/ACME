@@ -2,17 +2,16 @@ package domain
 
 import (
 	"fmt"
-	"log"
-	"net/url"
-	"strings"
+	"regexp"
 )
 
-func ParseDomainName(domainName string) string {
-	url, err := url.Parse(fmt.Sprintf("http://%s", domainName))
-	if err != nil {
-		log.Fatal(err)
+func ParseDomainName(domainName string) (string, error) {
+	re := regexp.MustCompile(`^(?:https?:\/\/)?(?:[^@\/\n]+@)?(?:www\.)?([^:\/?\n]+)`)
+
+	found := re.FindAllString(domainName, -1)
+	if len(found) > 0 {
+		return found[0], nil
 	}
 
-	parts := strings.Split(url.Hostname(), ".")
-	return parts[len(parts)-2] + "." + parts[len(parts)-1]
+	return "", fmt.Errorf("failed to parse host from %s, a valid domain name must be supplied", domainName)
 }
