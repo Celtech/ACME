@@ -32,7 +32,6 @@ func checkCertificate(w http.ResponseWriter, req *http.Request) {
 	fmt.Fprintf(w, fmt.Sprintf("Checking %s", domainName))
 
 	certbot.Run(w, domainName)
-	// certbot.GenerateCert("handbook.chargeover.com")
 }
 
 type req http.Request

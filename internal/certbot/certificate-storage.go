@@ -162,6 +162,21 @@ func (s *CertificatesStorage) ReadCertificate(domain, extension string) ([]*x509
 	return certcrypto.ParsePEMBundle(content)
 }
 
+func (s *CertificatesStorage) WriteCrtList(domain string) error {
+	filePath := filepath.Join(s.rootPath, "crt-list.txt")
+	crtList, err := os.OpenFile(filePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		return err
+	}
+
+	defer crtList.Close()
+
+	var baseFileName = sanitizedDomain(domain)
+	_, writeErr := crtList.WriteString(filepath.Join(s.rootPath, baseFileName+".pem\n"))
+
+	return writeErr
+}
+
 func (s *CertificatesStorage) WriteFile(domain, extension string, data []byte) error {
 	var baseFileName = sanitizedDomain(domain)
 	filePath := filepath.Join(s.rootPath, baseFileName+extension)
@@ -179,6 +194,11 @@ func (s *CertificatesStorage) WriteCertificateFiles(domain string, certRes *cert
 		err = s.WriteFile(domain, ".pem", bytes.Join([][]byte{certRes.Certificate, certRes.PrivateKey}, nil))
 		if err != nil {
 			return fmt.Errorf("unable to save PEM file: %w", err)
+		}
+
+		err = s.WriteCrtList(domain)
+		if err != nil {
+			return fmt.Errorf("unable to write certificate to crt-list.txt: %w", err)
 		}
 	}
 
