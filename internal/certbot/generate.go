@@ -13,6 +13,12 @@ import (
 	"github.com/go-acme/lego/v4/registration"
 )
 
+const (
+	CHALLENGE_TYPE_TLS  = "challenge-tls"
+	CHALLENGE_TYPE_HTTP = "challenge-http"
+	CHALLENGE_TYPE_DNS  = "challenge-dns"
+)
+
 const filePerm os.FileMode = 0o600
 const rootPathWarningMessage = `!!!! HEADS UP !!!!
 Your account credentials have been saved in your Let's Encrypt
@@ -22,11 +28,11 @@ configuration directory will also contain certificates and
 private keys obtained from Let's Encrypt so making regular
 backups of this folder is ideal.`
 
-func Run(w http.ResponseWriter, domainName string) {
+func Run(w http.ResponseWriter, domainName string, challengeType string) {
 	accountsStorage := NewAccountsStorage()
 
 	account, client := setup(w, accountsStorage)
-	SetupChallenges(client)
+	SetupChallenges(client, challengeType)
 
 	if account.Registration == nil {
 		reg, err := register(client)
@@ -53,15 +59,6 @@ func Run(w http.ResponseWriter, domainName string) {
 	}
 
 	certsStorage.SaveResource(cert)
-
-	// meta := map[string]string{
-	// 	renewEnvAccountEmail: account.Email,
-	// 	renewEnvCertDomain:   cert.Domain,
-	// 	renewEnvCertPath:     certsStorage.GetFileName(cert.Domain, ".crt"),
-	// 	renewEnvCertKeyPath:  certsStorage.GetFileName(cert.Domain, ".key"),
-	// }
-
-	// return launchHook(ctx.String("run-hook"), meta)
 }
 
 func setup(w http.ResponseWriter, accountsStorage *AccountsStorage) (*Account, *lego.Client) {
@@ -128,18 +125,4 @@ func obtainCertificate(domainName string, client *lego.Client) (*certificate.Res
 		AlwaysDeactivateAuthorizations: false,
 	}
 	return client.Certificate.Obtain(request)
-
-	// read the CSR
-	// csr, err := readCSRFile(ctx.String("csr"))
-	// if err != nil {
-	// 	return nil, err
-	// }
-
-	// // obtain a certificate for this CSR
-	// return client.Certificate.ObtainForCSR(certificate.ObtainForCSRRequest{
-	// 	CSR:                            csr,
-	// 	Bundle:                         bundle,
-	// 	PreferredChain:                 ctx.String("preferred-chain"),
-	// 	AlwaysDeactivateAuthorizations: ctx.Bool("always-deactivate-authorizations"),
-	// })
 }

@@ -1,8 +1,9 @@
 package main
 
 import (
-	"certbot-renewer/internal/certbot"
+	"certbot-renewer/internal/api"
 	"certbot-renewer/internal/domain"
+
 	"time"
 
 	"fmt"
@@ -27,16 +28,6 @@ func init() {
 	startTime = time.Now()
 }
 
-func checkCertificate(w http.ResponseWriter, req *http.Request) {
-	domainName, err := domain.ParseDomainName(req.Host)
-	if err != nil {
-		log.Fatalln(err.Error())
-	}
-
-	fmt.Fprintf(w, "Checking %s", domainName)
-	certbot.Run(w, domainName)
-}
-
 type req http.Request
 
 func (t req) Protocol() string {
@@ -51,7 +42,6 @@ func (t req) Protocol() string {
 func main() {
 	log.Println("Starting server")
 
-	http.HandleFunc("/request", checkCertificate)
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		domainName, err := domain.ParseDomainName(r.Host)
 		if err != nil {
@@ -78,6 +68,10 @@ func main() {
 		fmt.Fprintf(w, "# GET - %s://%s/renew\r\n", req(*r).Protocol(), r.Host)
 		fmt.Fprintf(w, "Used to force renew a SSL certificate for a given domain.\r\n")
 	})
+
+	http.HandleFunc("/api/request/tls", api.RequestCertificateWithTLS)
+	http.HandleFunc("/api/request/http", api.RequestCertificateWithHTTP)
+	http.HandleFunc("/api/request/dns", api.RequestCertificateWithDNS)
 
 	if err := http.ListenAndServe(":9022", nil); err != nil {
 		log.Printf("listenAndServe failed: %v", err)

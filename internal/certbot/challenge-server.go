@@ -15,20 +15,28 @@ import (
 	"github.com/go-acme/lego/v4/lego"
 )
 
-func SetupChallenges(client *lego.Client) {
+func SetupChallenges(client *lego.Client, challengeType string) {
 	fmt.Println("Starting HTTP and TLS challenge servers")
 
-	// err := client.Challenge.SetHTTP01Provider(setupHTTPProvider())
-	// if err != nil {
-	// 	fmt.Println(err.Error())
-	// }
+	switch challengeType {
+	case CHALLENGE_TYPE_HTTP:
+		err := client.Challenge.SetHTTP01Provider(setupHTTPProvider())
+		if err != nil {
+			fmt.Println(err.Error())
+		}
 
-	// errTLS := client.Challenge.SetTLSALPN01Provider(setupTLSProvider())
-	// if errTLS != nil {
-	// 	fmt.Println(errTLS.Error())
-	// }
+	case CHALLENGE_TYPE_TLS:
+		errTLS := client.Challenge.SetTLSALPN01Provider(setupTLSProvider())
+		if errTLS != nil {
+			fmt.Println(errTLS.Error())
+		}
 
-	setupDNSProvider(client)
+	case CHALLENGE_TYPE_DNS:
+		setupDNSProvider(client)
+
+	default:
+		// TODO: error out and pass up, how did we even get here?
+	}
 }
 
 func setupHTTPProvider() challenge.Provider {
