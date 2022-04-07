@@ -1,0 +1,14 @@
+version: '3'
+
+tasks:
+  build:docker:
+    cmds:
+      - cmd: docker buildx rm ssl_builder # just in case task was exited early
+        ignore_error: true
+      - cmd: docker buildx create --name ssl_builder --use
+        ignore_error: true
+      - cmd: docker buildx build --push --platform linux/amd64 -t timhinz/ssl-testing:latest -f docker/Dockerfile .
+        ignore_error: true
+      - cmd: docker buildx rm ssl_builder
+        ignore_error: true
+    silent: false

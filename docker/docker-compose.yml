@@ -2,6 +2,18 @@ version: "3.8"
 
 services:
   app:
-    image: nginx
+    build: 
+      dockerfile: "./docker/Dockerfile"
+      context: ..
     ports:
-      - "8080:80"
+      - "9022:9022"
+      - "5001:5001"
+      - "5002:5002"
+    environment:
+      ACCOUNT_EMAIL: "tim@chargeover.com"
+      DATA_PATH: "/data"
+    volumes:
+      - data:/data
+
+volumes:
+  data:

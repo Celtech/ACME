@@ -1,0 +1,60 @@
+version: "3.8"
+
+services:
+  authority:
+    image: timhinz/ssl-testing:latest
+    networks:
+      - ssl-net
+    ports:
+      - "9022:9022"
+      - "5001:5001"
+      - "5002:5002"
+    environment:
+      ACCOUNT_EMAIL: "tim@chargeover.com"
+      DATA_PATH: "/data"
+      HTTP_CHALLENGE_PORT: "80"
+      TLS_CHALLENGE_PORT: "443"
+      HTTP_CHALLENGE_PROXY_HEADER: "X-Forwarded-Host"
+      ACME_HOST: "https://acme-staging-v02.api.letsencrypt.org/directory"
+    volumes:
+      - data:/data
+
+  app:
+    image: nginx:latest
+    networks:
+      - ssl-net
+  
+  haproxy:
+    image: haproxy:2.5.5-alpine3.15
+    dns:
+      - 127.0.0.11
+    networks:
+      - ssl-net
+    ports:
+      - target: 80
+        published: 80
+        protocol: tcp
+        mode: ingress
+      - target: 443
+        published: 443
+        protocol: tcp
+        mode: ingress
+      - target: 9090
+        published: 9090
+        protocol: tcp
+        mode: ingress
+    volumes:
+      - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
+      - ./certs:/certs
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://127.0.0.1:9090/health || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  data:
+
+networks:
+  ssl-net:
+    driver: overlay

@@ -1,12 +1,15 @@
-FROM golang:1.16-alpine
+FROM golang:1.16-alpine AS base
 
 WORKDIR /app
 
-COPY . ./
+COPY go.mod go.sum ./
 RUN go mod download
 
-RUN go build -o /docker-gs-ping
+COPY . ./
+RUN go build -o /challenge-server
 
-EXPOSE 8080
 
-CMD [ "/docker-gs-ping" ]
+FROM alpine:3.15.4
+COPY --chmod=755 --from=base /challenge-server /challenge-server
+EXPOSE 9022
+CMD [ "/challenge-server" ]

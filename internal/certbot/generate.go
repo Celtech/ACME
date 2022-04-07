@@ -1,94 +1,145 @@
 package certbot
 
 import (
-	"crypto"
-	"crypto/ecdsa"
-	"crypto/elliptic"
-	"crypto/rand"
 	"fmt"
 	"log"
+	"net/http"
+	"os"
+	"time"
 
 	"github.com/go-acme/lego/v4/certcrypto"
 	"github.com/go-acme/lego/v4/certificate"
-	"github.com/go-acme/lego/v4/challenge/http01"
-	"github.com/go-acme/lego/v4/challenge/tlsalpn01"
 	"github.com/go-acme/lego/v4/lego"
 	"github.com/go-acme/lego/v4/registration"
 )
 
-// You'll need a user or account type that implements acme.User
-type MyUser struct {
-	Email        string
-	Registration *registration.Resource
-	key          crypto.PrivateKey
-}
+const filePerm os.FileMode = 0o600
+const rootPathWarningMessage = `!!!! HEADS UP !!!!
+Your account credentials have been saved in your Let's Encrypt
+configuration directory at "%s".
+You should make a secure backup of this folder now. This
+configuration directory will also contain certificates and
+private keys obtained from Let's Encrypt so making regular
+backups of this folder is ideal.`
 
-func (u *MyUser) GetEmail() string {
-	return u.Email
-}
-func (u MyUser) GetRegistration() *registration.Resource {
-	return u.Registration
-}
-func (u *MyUser) GetPrivateKey() crypto.PrivateKey {
-	return u.key
-}
+func Run(w http.ResponseWriter, domainName string) {
+	accountsStorage := NewAccountsStorage()
 
-func GenerateCert(domainName string) {
+	account, client := setup(w, accountsStorage)
+	SetupChallenges(client)
 
-	// Create a user. New accounts need an email and private key to start.
-	privateKey, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+	if account.Registration == nil {
+		reg, err := register(client)
+		if err != nil {
+			log.Fatalf("Could not complete registration\n\t%v\n", err)
+		}
+
+		account.Registration = reg
+		if err = accountsStorage.Save(account); err != nil {
+			log.Fatal(err)
+		}
+
+		fmt.Printf(rootPathWarningMessage, accountsStorage.GetRootPath())
+	}
+
+	certsStorage := NewCertificatesStorage()
+	certsStorage.CreateRootFolder()
+
+	cert, err := obtainCertificate(domainName, client)
 	if err != nil {
-		log.Fatal(err)
+		// Make sure to return a non-zero exit code if ObtainSANCertificate returned at least one error.
+		// Due to us not returning partial certificate we can just exit here instead of at the end.
+		log.Fatalf("Could not obtain certificates:\n\t%v", err)
 	}
 
-	myUser := MyUser{
-		Email: "tim@chargeover.com",
-		key:   privateKey,
+	certsStorage.SaveResource(cert)
+
+	// meta := map[string]string{
+	// 	renewEnvAccountEmail: account.Email,
+	// 	renewEnvCertDomain:   cert.Domain,
+	// 	renewEnvCertPath:     certsStorage.GetFileName(cert.Domain, ".crt"),
+	// 	renewEnvCertKeyPath:  certsStorage.GetFileName(cert.Domain, ".key"),
+	// }
+
+	// return launchHook(ctx.String("run-hook"), meta)
+}
+
+func setup(w http.ResponseWriter, accountsStorage *AccountsStorage) (*Account, *lego.Client) {
+	privateKey := accountsStorage.GetPrivateKey(acctKeyType)
+
+	var account *Account
+	if accountsStorage.ExistsAccountFilePath() {
+		account = accountsStorage.LoadAccount(privateKey)
+	} else {
+		account = &Account{Email: accountsStorage.GetUserID(), key: privateKey}
 	}
 
-	config := lego.NewConfig(&myUser)
+	client := newClient(w, account, acctKeyType)
 
-	config.CADirURL = "https://acme-v02.api.letsencrypt.org/directory"
-	config.Certificate.KeyType = certcrypto.RSA2048
+	return account, client
+}
 
-	// A client facilitates communication with the CA server.
+func register(client *lego.Client) (*registration.Resource, error) {
+	return client.Registration.Register(registration.RegisterOptions{TermsOfServiceAgreed: true})
+}
+
+func newClient(w http.ResponseWriter, acc registration.User, keyType certcrypto.KeyType) *lego.Client {
+	acmeHost := os.Getenv("ACME_HOST")
+	if len(acmeHost) == 0 {
+		acmeHost = acmeServer
+	}
+
+	config := lego.NewConfig(acc)
+	config.CADirURL = acmeHost
+
+	config.Certificate = lego.CertificateConfig{
+		KeyType: keyType,
+		Timeout: time.Duration(30) * time.Second,
+	}
+	config.UserAgent = "lego-cli/chargeover"
+	config.HTTPClient.Timeout = time.Duration(30) * time.Second
+
 	client, err := lego.NewClient(config)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Printf("Could not create client: %v\n", err)
+		os.Exit(1)
 	}
 
-	// We specify an HTTP port of 5002 and an TLS port of 5001 on all interfaces
-	// because we aren't running as root and can't bind a listener to port 80 and 443
-	// (used later when we attempt to pass challenges). Keep in mind that you still
-	// need to proxy challenge traffic to port 5002 and 5001.
-	err = client.Challenge.SetHTTP01Provider(http01.NewProviderServer("", "5002"))
-	if err != nil {
-		log.Fatal(err)
-	}
-	err = client.Challenge.SetTLSALPN01Provider(tlsalpn01.NewProviderServer("", "5001"))
-	if err != nil {
-		log.Fatal(err)
-	}
+	return client
+}
 
-	// New users will need to register
-	reg, err := client.Registration.Register(registration.RegisterOptions{TermsOfServiceAgreed: true})
-	if err != nil {
-		log.Fatal(err)
+func createNonExistingFolder(path string) error {
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		return os.MkdirAll(path, 0o700)
+	} else if err != nil {
+		return err
 	}
-	myUser.Registration = reg
+	return nil
+}
 
+func obtainCertificate(domainName string, client *lego.Client) (*certificate.Resource, error) {
+	fmt.Printf("Requesting certificate for: %s\n", domainName)
+
+	// obtain a certificate, generating a new private key
 	request := certificate.ObtainRequest{
-		Domains: []string{domainName},
-		Bundle:  true,
+		Domains:                        []string{domainName},
+		Bundle:                         false,
+		MustStaple:                     false,
+		AlwaysDeactivateAuthorizations: false,
 	}
-	certificates, err := client.Certificate.Obtain(request)
-	if err != nil {
-		log.Fatal(err)
-	}
+	return client.Certificate.Obtain(request)
 
-	// Each certificate comes back with the cert bytes, the bytes of the client's
-	// private key, and a certificate URL. SAVE THESE TO DISK.
-	fmt.Printf("%#v\n", certificates)
+	// read the CSR
+	// csr, err := readCSRFile(ctx.String("csr"))
+	// if err != nil {
+	// 	return nil, err
+	// }
 
-	// ... all done.
+	// // obtain a certificate for this CSR
+	// return client.Certificate.ObtainForCSR(certificate.ObtainForCSRRequest{
+	// 	CSR:                            csr,
+	// 	Bundle:                         bundle,
+	// 	PreferredChain:                 ctx.String("preferred-chain"),
+	// 	AlwaysDeactivateAuthorizations: ctx.Bool("always-deactivate-authorizations"),
+	// })
 }
