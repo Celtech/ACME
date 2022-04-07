@@ -87,7 +87,7 @@ func NewAccountsStorage() *AccountsStorage {
 
 	basePath := os.Getenv("DATA_PATH")
 	if len(basePath) == 0 {
-		fmt.Printf("You must set the `DATA_PATH` environment variable")
+		basePath = "/data"
 	}
 
 	rootPath := filepath.Join(basePath, baseAccountsRootFolderName)
