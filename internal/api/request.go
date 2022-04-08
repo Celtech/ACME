@@ -1,7 +1,7 @@
 package api
 
 import (
-	"certbot-renewer/internal/certbot"
+	"certbot-renewer/internal/acme"
 	"certbot-renewer/internal/domain"
 	"fmt"
 	"log"
@@ -11,19 +11,19 @@ import (
 func RequestCertificateWithDNS(w http.ResponseWriter, req *http.Request) {
 	fmt.Fprintln(w, "DNS")
 
-	requestCertificate(w, req, certbot.CHALLENGE_TYPE_DNS)
+	requestCertificate(w, req, acme.CHALLENGE_TYPE_DNS)
 }
 
 func RequestCertificateWithHTTP(w http.ResponseWriter, req *http.Request) {
 	fmt.Fprintln(w, "HTTP")
 
-	requestCertificate(w, req, certbot.CHALLENGE_TYPE_HTTP)
+	requestCertificate(w, req, acme.CHALLENGE_TYPE_HTTP)
 }
 
 func RequestCertificateWithTLS(w http.ResponseWriter, req *http.Request) {
 	fmt.Fprintln(w, "TLS")
 
-	requestCertificate(w, req, certbot.CHALLENGE_TYPE_TLS)
+	requestCertificate(w, req, acme.CHALLENGE_TYPE_TLS)
 }
 
 func requestCertificate(w http.ResponseWriter, req *http.Request, challengeType string) {
@@ -33,5 +33,5 @@ func requestCertificate(w http.ResponseWriter, req *http.Request, challengeType 
 	}
 
 	fmt.Fprintf(w, "Checking %s", domainName)
-	certbot.Run(w, domainName, challengeType)
+	acme.Run(w, domainName, challengeType)
 }
