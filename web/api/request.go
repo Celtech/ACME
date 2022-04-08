@@ -1,8 +1,8 @@
 package api
 
 import (
-	"certbot-renewer/internal/acme"
-	"certbot-renewer/internal/domain"
+	"baker-acme/internal/acme"
+	"baker-acme/internal/util"
 	"fmt"
 	"log"
 	"net/http"
@@ -27,7 +27,7 @@ func RequestCertificateWithTLS(w http.ResponseWriter, req *http.Request) {
 }
 
 func requestCertificate(w http.ResponseWriter, req *http.Request, challengeType string) {
-	domainName, err := domain.ParseDomainName(req.Host)
+	domainName, err := util.ParseDomainName(req.Host)
 	if err != nil {
 		log.Fatalln(err.Error())
 	}

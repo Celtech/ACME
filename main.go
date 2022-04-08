@@ -1,33 +1,68 @@
 package main
 
 import (
-	"certbot-renewer/internal/api"
+	"baker-acme/internal/context"
+	"baker-acme/web"
+	con "context"
+	"os"
+	"os/signal"
+	"sync"
+	"syscall"
+	"time"
 
 	"fmt"
-	"log"
-	"net/http"
 )
 
+var appContext *context.AppContext
+
+func init() {
+	appContext = context.NewAppContext(nil)
+}
+
 func main() {
-	log.Println("Starting server")
+	var returnCode = make(chan int)
+	var finishUP = make(chan struct{})
+	var done = make(chan struct{})
+	var gracefulStop = make(chan os.Signal)
 
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintln(w, "Usage:")
-		fmt.Fprintf(w, "# GET - %s/request\r\n", r.Host)
-		fmt.Fprintf(w, "Used to request a new SSL certificate for a given domain.\r\n\r\n")
+	signal.Notify(gracefulStop, syscall.SIGTERM)
+	signal.Notify(gracefulStop, syscall.SIGINT)
+	go func() {
+		// wait for our os signal to stop the app
+		// on the graceful stop channel
+		// this goroutine will block until we get an OS signal
+		sig := <-gracefulStop
+		appContext.Logger.Info(fmt.Sprintf("caught sig: %+v", sig))
 
-		fmt.Fprintf(w, "# GET - %s/check\r\n", r.Host)
-		fmt.Fprintf(w, "Used to fetch the expiration date of a SSL certificate a given domain.\r\n\r\n")
+		// send message on "finish up" channel to tell the app to
+		// gracefully shutdown
+		finishUP <- struct{}{}
 
-		fmt.Fprintf(w, "# GET - %s/renew\r\n", r.Host)
-		fmt.Fprintf(w, "Used to force renew a SSL certificate for a given domain.\r\n")
-	})
+		// wait for word back if we finished or not
+		select {
+		case <-time.After(30 * time.Second):
+			// timeout after 30 seconds waiting for app to finish,
+			// our application should Exit(1)
+			returnCode <- 1
+		case <-done:
+			// if we got a message on done, we finished, so end app
+			// our application should Exit(0)
+			returnCode <- 0
+		}
+	}()
 
-	http.HandleFunc("/api/request/tls", api.RequestCertificateWithTLS)
-	http.HandleFunc("/api/request/http", api.RequestCertificateWithHTTP)
-	http.HandleFunc("/api/request/dns", api.RequestCertificateWithDNS)
+	httpServerExitDone := &sync.WaitGroup{}
+	httpServerExitDone.Add(1)
+	srv := web.StartServer(appContext, httpServerExitDone)
 
-	if err := http.ListenAndServe(":9022", nil); err != nil {
-		log.Printf("listenAndServe failed: %v", err)
-	}
+	<-finishUP
+	appContext.Logger.Info("attempting graceful shutdown")
+
+	srv.Shutdown(con.Background())
+	httpServerExitDone.Wait()
+
+	appContext.Logger.Info("graceful shutdown complete")
+
+	done <- struct{}{}
+	os.Exit(<-returnCode)
 }

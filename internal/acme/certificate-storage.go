@@ -15,7 +15,6 @@ import (
 	"github.com/go-acme/lego/v4/certificate"
 	"github.com/go-acme/lego/v4/log"
 	"golang.org/x/net/idna"
-	//"software.sslmate.com/src/go-pkcs12"
 )
 
 const (

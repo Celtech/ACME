@@ -10,8 +10,7 @@ services:
       - "5001:5001"
       - "5002:5002"
     environment:
-      ACCOUNT_EMAIL: "tim@chargeover.com"
-      DATA_PATH: "/data"
+      BAKER_ACME_PROVIDER_EMAIL: "tim@chargeover.com"
     volumes:
       - data:/data
 
