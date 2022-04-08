@@ -1,12 +1,12 @@
 version: '3'
 
 tasks:
-  build:docker:
+  docker:build:
     cmds:
       - cmd: docker build -t git.rykelabs.com:5050/rykelabs/acme-server:latest -f docker/Dockerfile .
     silent: false
   
-  deploy:docker:
+  docker:deploy:
     cmds:
       - cmd: docker buildx rm acme_builder # just in case task was exited early by the user
         ignore_error: true
