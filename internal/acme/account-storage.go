@@ -12,8 +12,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	"log"
-
 	"github.com/go-acme/lego/v4/certcrypto"
 	"github.com/go-acme/lego/v4/lego"
 	"github.com/go-acme/lego/v4/registration"
@@ -69,11 +67,11 @@ type AccountsStorage struct {
 }
 
 // NewAccountsStorage Creates a new AccountsStorage.
-func NewAccountsStorage() *AccountsStorage {
+func NewAccountsStorage() (*AccountsStorage, error) {
 	// TODO: move to account struct? Currently MUST pass email.
-	email := os.Getenv("ACCOUNT_EMAIL")
+	email := os.Getenv("BAKER_ACME_PROVIDER_EMAIL")
 	if len(email) == 0 {
-		fmt.Printf("You must set the `ACCOUNT_EMAIL` environment variable")
+		return nil, errors.New("you must set the `BAKER_ACME_PROVIDER_EMAIL` environment variable")
 	}
 
 	acmeHost := os.Getenv("ACME_HOST")
@@ -82,7 +80,7 @@ func NewAccountsStorage() *AccountsStorage {
 	}
 	serverURL, err := url.Parse(acmeHost)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	basePath := os.Getenv("DATA_PATH")
@@ -101,17 +99,17 @@ func NewAccountsStorage() *AccountsStorage {
 		rootUserPath:    rootUserPath,
 		keysPath:        filepath.Join(rootUserPath, baseKeysFolderName),
 		accountFilePath: filepath.Join(rootUserPath, accountFileName),
-	}
+	}, nil
 }
 
-func (s *AccountsStorage) ExistsAccountFilePath() bool {
+func (s *AccountsStorage) ExistsAccountFilePath() (bool, error) {
 	accountFile := filepath.Join(s.rootUserPath, accountFileName)
 	if _, err := os.Stat(accountFile); os.IsNotExist(err) {
-		return false
+		return false, nil
 	} else if err != nil {
-		fmt.Println(err.Error())
+		return false, err
 	}
-	return true
+	return true, nil
 }
 
 func (s *AccountsStorage) GetRootPath() string {
@@ -165,28 +163,32 @@ func (s *AccountsStorage) LoadAccount(privateKey crypto.PrivateKey) *Account {
 	return &account
 }
 
-func (s *AccountsStorage) GetPrivateKey(keyType certcrypto.KeyType) crypto.PrivateKey {
+func (s *AccountsStorage) GetPrivateKey(keyType certcrypto.KeyType) (crypto.PrivateKey, error) {
 	accKeyPath := filepath.Join(s.keysPath, s.userID+".key")
 
 	if _, err := os.Stat(accKeyPath); os.IsNotExist(err) {
-		fmt.Printf("No key found for account %s. Generating a %s key.\n", s.userID, keyType)
+		//fmt.Printf("No key found for account %s. Generating a %s key.\n", s.userID, keyType)
 		s.createKeysFolder()
 
 		privateKey, err := generatePrivateKey(accKeyPath, keyType)
 		if err != nil {
-			fmt.Printf("Could not generate RSA private account key for account %s: %v\n", s.userID, err)
+			return nil, errors.New(
+				fmt.Sprintf("Could not generate RSA private account key for account %s: %v\n", s.userID, err),
+			)
 		}
 
-		fmt.Printf("Saved key to %s\n", accKeyPath)
-		return privateKey
+		//fmt.Printf("Saved key to %s\n", accKeyPath)
+		return privateKey, nil
 	}
 
 	privateKey, err := loadPrivateKey(accKeyPath)
 	if err != nil {
-		fmt.Printf("Could not load RSA private key from file %s: %v\n", accKeyPath, err)
+		return nil, errors.New(
+			fmt.Sprintf("Could not load RSA private key from file %s: %v\n", accKeyPath, err),
+		)
 	}
 
-	return privateKey
+	return privateKey, nil
 }
 
 func (s *AccountsStorage) createKeysFolder() {

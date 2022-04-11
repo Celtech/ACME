@@ -10,7 +10,7 @@ import (
 	"syscall"
 	"time"
 
-	"fmt"
+	log "github.com/sirupsen/logrus"
 )
 
 var appContext *context.AppContext
@@ -32,7 +32,7 @@ func main() {
 		// on the graceful stop channel
 		// this goroutine will block until we get an OS signal
 		sig := <-gracefulStop
-		appContext.Logger.Info(fmt.Sprintf("caught sig: %+v", sig))
+		log.Infof("caught sig: %+v", sig)
 
 		// send message on "finish up" channel to tell the app to
 		// gracefully shutdown
@@ -56,12 +56,12 @@ func main() {
 	srv := web.StartServer(appContext, httpServerExitDone)
 
 	<-finishUP
-	appContext.Logger.Info("attempting graceful shutdown")
+	log.Info("attempting graceful shutdown")
 
 	srv.Shutdown(con.Background())
 	httpServerExitDone.Wait()
 
-	appContext.Logger.Info("graceful shutdown complete")
+	log.Info("graceful shutdown complete")
 
 	done <- struct{}{}
 	os.Exit(<-returnCode)

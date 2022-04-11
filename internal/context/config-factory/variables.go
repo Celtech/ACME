@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"go.uber.org/zap"
+	log "github.com/sirupsen/logrus"
 )
 
 type Variable struct {
@@ -39,7 +39,7 @@ func getVariableFromFile(variableName string) (string, error) {
 	return string(dat), nil
 }
 
-func VariableToSetting(logger *zap.Logger, variable Variable) string {
+func VariableToSetting(variable Variable) string {
 	fileVal, err := getVariableFromFile(variable.name)
 	if err == nil {
 		return fileVal
@@ -51,12 +51,10 @@ func VariableToSetting(logger *zap.Logger, variable Variable) string {
 	}
 
 	if variable.required {
-		logger.Fatal(
-			fmt.Sprintf(
-				"could not find required environment variable %s or %s_FILE, please set one to start your server",
-				variable.name,
-				variable.name,
-			),
+		log.Fatalf(
+			"could not find required environment variable %s or %s_FILE, please set one to start your server",
+			variable.name,
+			variable.name,
 		)
 		os.Exit(1)
 	}

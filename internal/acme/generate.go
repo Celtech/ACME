@@ -1,9 +1,8 @@
 package acme
 
 import (
+	"errors"
 	"fmt"
-	"log"
-	"net/http"
 	"os"
 	"time"
 
@@ -11,6 +10,7 @@ import (
 	"github.com/go-acme/lego/v4/certificate"
 	"github.com/go-acme/lego/v4/lego"
 	"github.com/go-acme/lego/v4/registration"
+	log "github.com/sirupsen/logrus"
 )
 
 const (
@@ -19,7 +19,7 @@ const (
 	CHALLENGE_TYPE_DNS  = "challenge-dns"
 )
 
-const filePerm os.FileMode = 0o600
+const filePerm os.FileMode = 0o666
 const rootPathWarningMessage = `!!!! HEADS UP !!!!
 Your account credentials have been saved in your Let's Encrypt
 configuration directory at "%s".
@@ -28,59 +28,81 @@ configuration directory will also contain certificates and
 private keys obtained from Let's Encrypt so making regular
 backups of this folder is ideal.`
 
-func Run(w http.ResponseWriter, domainName string, challengeType string) {
-	accountsStorage := NewAccountsStorage()
+func Run(domainName string, challengeType string) error {
+	accountsStorage, err := NewAccountsStorage()
+	if err != nil {
+		return err
+	}
 
-	account, client := setup(w, accountsStorage)
-	SetupChallenges(client, challengeType)
+	account, client, err := setup(accountsStorage)
+	if err != nil {
+		return err
+	}
+
+	if err := SetupChallenges(client, challengeType); err != nil {
+		return err
+	}
 
 	if account.Registration == nil {
 		reg, err := register(client)
 		if err != nil {
-			log.Fatalf("Could not complete registration\n\t%v\n", err)
+			return errors.New(
+				fmt.Sprintf("Could not complete registration\n\t%v\n", err),
+			)
 		}
 
 		account.Registration = reg
 		if err = accountsStorage.Save(account); err != nil {
-			log.Fatal(err)
+			return err
 		}
 
-		fmt.Printf(rootPathWarningMessage, accountsStorage.GetRootPath())
+		log.Infof(rootPathWarningMessage, accountsStorage.GetRootPath())
 	}
 
 	certsStorage := NewCertificatesStorage()
-	certsStorage.CreateRootFolder()
+	if err := certsStorage.CreateRootFolder(); err != nil {
+		return err
+	}
 
 	cert, err := obtainCertificate(domainName, client)
 	if err != nil {
-		// Make sure to return a non-zero exit code if ObtainSANCertificate returned at least one error.
-		// Due to us not returning partial certificate we can just exit here instead of at the end.
-		log.Fatalf("Could not obtain certificates:\n\t%v", err)
+		return errors.New(
+			fmt.Sprintf("Could not obtain certificates:\n\t%v", err),
+		)
 	}
 
-	certsStorage.SaveResource(cert)
+	return certsStorage.SaveResource(cert)
 }
 
-func setup(w http.ResponseWriter, accountsStorage *AccountsStorage) (*Account, *lego.Client) {
-	privateKey := accountsStorage.GetPrivateKey(acctKeyType)
+func setup(accountsStorage *AccountsStorage) (*Account, *lego.Client, error) {
+	privateKey, err := accountsStorage.GetPrivateKey(acctKeyType)
+	if err != nil {
+		return nil, nil, err
+	}
 
 	var account *Account
-	if accountsStorage.ExistsAccountFilePath() {
+	res, err := accountsStorage.ExistsAccountFilePath()
+	if err != nil {
+		return nil, nil, err
+	} else if res {
 		account = accountsStorage.LoadAccount(privateKey)
 	} else {
 		account = &Account{Email: accountsStorage.GetUserID(), key: privateKey}
 	}
 
-	client := newClient(w, account, acctKeyType)
+	client, err := newClient(account, acctKeyType)
+	if err != nil {
+		return nil, nil, err
+	}
 
-	return account, client
+	return account, client, nil
 }
 
 func register(client *lego.Client) (*registration.Resource, error) {
 	return client.Registration.Register(registration.RegisterOptions{TermsOfServiceAgreed: true})
 }
 
-func newClient(w http.ResponseWriter, acc registration.User, keyType certcrypto.KeyType) *lego.Client {
+func newClient(acc registration.User, keyType certcrypto.KeyType) (*lego.Client, error) {
 	acmeHost := os.Getenv("ACME_HOST")
 	if len(acmeHost) == 0 {
 		acmeHost = acmeServer
@@ -98,11 +120,12 @@ func newClient(w http.ResponseWriter, acc registration.User, keyType certcrypto.
 
 	client, err := lego.NewClient(config)
 	if err != nil {
-		fmt.Printf("Could not create client: %v\n", err)
-		os.Exit(1)
+		return nil, errors.New(
+			fmt.Sprintf("Could not create client: %v\n", err),
+		)
 	}
 
-	return client
+	return client, nil
 }
 
 func createNonExistingFolder(path string) error {
@@ -115,7 +138,7 @@ func createNonExistingFolder(path string) error {
 }
 
 func obtainCertificate(domainName string, client *lego.Client) (*certificate.Resource, error) {
-	fmt.Printf("Requesting certificate for: %s\n", domainName)
+	log.Infof("Requesting certificate for: %s\n", domainName)
 
 	// obtain a certificate, generating a new private key
 	request := certificate.ObtainRequest{

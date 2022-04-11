@@ -1,8 +1,6 @@
 package acme
 
 import (
-	"fmt"
-	"log"
 	"os"
 	"time"
 
@@ -11,32 +9,32 @@ import (
 	"github.com/go-acme/lego/v4/challenge/http01"
 	"github.com/go-acme/lego/v4/challenge/tlsalpn01"
 	"github.com/go-acme/lego/v4/providers/dns"
+	log "github.com/sirupsen/logrus"
 
 	"github.com/go-acme/lego/v4/lego"
 )
 
-func SetupChallenges(client *lego.Client, challengeType string) {
-	fmt.Println("Starting HTTP and TLS challenge servers")
+func SetupChallenges(client *lego.Client, challengeType string) error {
+	log.Infof("Starting HTTP and TLS challenge servers")
 
 	switch challengeType {
 	case CHALLENGE_TYPE_HTTP:
-		err := client.Challenge.SetHTTP01Provider(setupHTTPProvider())
-		if err != nil {
-			fmt.Println(err.Error())
+		if err := client.Challenge.SetHTTP01Provider(setupHTTPProvider()); err != nil {
+			return err
 		}
 
 	case CHALLENGE_TYPE_TLS:
-		errTLS := client.Challenge.SetTLSALPN01Provider(setupTLSProvider())
-		if errTLS != nil {
-			fmt.Println(errTLS.Error())
+		if err := client.Challenge.SetTLSALPN01Provider(setupTLSProvider()); err != nil {
+			return err
 		}
 
 	case CHALLENGE_TYPE_DNS:
-		setupDNSProvider(client)
-
-	default:
-		// TODO: error out and pass up, how did we even get here?
+		if err := setupDNSProvider(client); err != nil {
+			return err
+		}
 	}
+
+	return nil
 }
 
 func setupHTTPProvider() challenge.Provider {
@@ -54,10 +52,10 @@ func setupHTTPProvider() challenge.Provider {
 	httpProxyHeader := os.Getenv("HTTP_CHALLENGE_PROXY_HEADER")
 	if len(httpProxyHeader) > 0 {
 		srv.SetProxyHeader(httpProxyHeader)
-		fmt.Printf("HTTP challenge server using proxy header %s\n", httpProxyHeader)
+		log.Infof("HTTP challenge server using proxy header %s\n", httpProxyHeader)
 	}
 
-	fmt.Printf("HTTP challenge server listening on %s:%s\n", httpHost, httpPort)
+	log.Infof("HTTP challenge server listening on %s:%s\n", httpHost, httpPort)
 
 	return srv
 }
@@ -73,18 +71,18 @@ func setupTLSProvider() challenge.Provider {
 		tlsPort = "5002"
 	}
 
-	fmt.Printf("TLS challenge server listening on %s:%s\n", tlsHost, tlsPort)
+	log.Infof("TLS challenge server listening on %s:%s\n", tlsHost, tlsPort)
 
 	return tlsalpn01.NewProviderServer(tlsHost, tlsPort)
 }
 
-func setupDNSProvider(client *lego.Client) {
+func setupDNSProvider(client *lego.Client) error {
 	provider, err := dns.NewDNSChallengeProviderByName("dnsmadeeasy")
 	if err != nil {
-		log.Fatalf(err.Error())
+		return err
 	}
 
-	err = client.Challenge.SetDNS01Provider(provider,
+	return client.Challenge.SetDNS01Provider(provider,
 		// dns01.CondOption(len(servers) > 0,
 		// 	dns01.AddRecursiveNameservers(dns01.ParseNameservers(ctx.StringSlice("dns.resolvers")))),
 		dns01.CondOption(true,
@@ -92,7 +90,4 @@ func setupDNSProvider(client *lego.Client) {
 		dns01.CondOption(true,
 			dns01.AddDNSTimeout(time.Duration(60)*time.Second)),
 	)
-	if err != nil {
-		log.Fatal(err)
-	}
 }

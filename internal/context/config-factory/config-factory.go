@@ -2,8 +2,6 @@ package configFactory
 
 import (
 	"strconv"
-
-	"go.uber.org/zap"
 )
 
 type serverConfig struct {
@@ -32,75 +30,75 @@ type ConfigFactory struct {
 	AcmeProvider        *acmeProvider
 }
 
-func NewConfigFactory(logger *zap.Logger) *ConfigFactory {
+func NewConfigFactory() *ConfigFactory {
 	configDebugMode, _ := strconv.ParseBool(
-		VariableToSetting(logger, Variable{
+		VariableToSetting(Variable{
 			name:         "BAKER_DEBUG",
 			defaultValue: "false",
 			required:     false,
 		}))
 
-	configAcmeProviderEmail := VariableToSetting(logger, Variable{
+	configAcmeProviderEmail := VariableToSetting(Variable{
 		name:         "BAKER_ACME_PROVIDER_EMAIL",
 		defaultValue: "",
 		required:     true,
 	})
 
-	configAcmeProviderProduction := VariableToSetting(logger, Variable{
+	configAcmeProviderProduction := VariableToSetting(Variable{
 		name:         "BAKER_ACME_PROVIDER_HOST",
 		defaultValue: "https://acme-v02.api.letsencrypt.org/directory",
 		required:     false,
 	})
 
-	configAcmeProviderStaging := VariableToSetting(logger, Variable{
+	configAcmeProviderStaging := VariableToSetting(Variable{
 		name:         "BAKER_ACME_PROVIDER_STAGING_HOST",
 		defaultValue: "https://acme-staging-v02.api.letsencrypt.org/directory",
 		required:     false,
 	})
 
-	configDataPath := VariableToSetting(logger, Variable{
+	configDataPath := VariableToSetting(Variable{
 		name:         "BAKER_DATA_PATH",
 		defaultValue: "/data",
 		required:     false,
 	})
 
-	configServerHost := VariableToSetting(logger, Variable{
+	configServerHost := VariableToSetting(Variable{
 		name:         "BAKER_SERVER_HOST",
 		defaultValue: "0.0.0.0",
 		required:     false,
 	})
 
-	configServerPort, _ := strconv.Atoi(VariableToSetting(logger, Variable{
+	configServerPort, _ := strconv.Atoi(VariableToSetting(Variable{
 		name:         "BAKER_SERVER_PORT",
 		defaultValue: "9022",
 		required:     false,
 	}))
 
-	configHTTPChallengeServerHost := VariableToSetting(logger, Variable{
+	configHTTPChallengeServerHost := VariableToSetting(Variable{
 		name:         "BAKER_HTTP_CHALLENGE_SERVER_HOST",
 		defaultValue: "0.0.0.0",
 		required:     false,
 	})
 
-	configHTTPChallengeServerPort, _ := strconv.Atoi(VariableToSetting(logger, Variable{
+	configHTTPChallengeServerPort, _ := strconv.Atoi(VariableToSetting(Variable{
 		name:         "BAKER_HTTP_CHALLENGE_SERVER_PORT",
 		defaultValue: "80",
 		required:     false,
 	}))
 
-	configTLSChallengeServerHost := VariableToSetting(logger, Variable{
+	configTLSChallengeServerHost := VariableToSetting(Variable{
 		name:         "BAKER_TLS_CHALLENGE_SERVER_HOST",
 		defaultValue: "0.0.0.0",
 		required:     false,
 	})
 
-	configTLSChallengeServerPort, _ := strconv.Atoi(VariableToSetting(logger, Variable{
+	configTLSChallengeServerPort, _ := strconv.Atoi(VariableToSetting(Variable{
 		name:         "BAKER_TLS_CHALLENGE_SERVER_PORT",
 		defaultValue: "443",
 		required:     false,
 	}))
 
-	configDNSChallengeProvider := VariableToSetting(logger, Variable{
+	configDNSChallengeProvider := VariableToSetting(Variable{
 		name:         "BAKER_DNS_CHALLENGE_PROVIDER",
 		defaultValue: "dnsmadeeasy",
 		required:     false,

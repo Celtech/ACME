@@ -4,7 +4,7 @@ go 1.17
 
 require (
 	github.com/go-acme/lego/v4 v4.6.0
-	go.uber.org/zap v1.21.0
+	github.com/sirupsen/logrus v1.8.1
 	golang.org/x/net v0.0.0-20211112202133-69e39bad7dc2
 )
 
@@ -55,7 +55,6 @@ require (
 	github.com/json-iterator/go v1.1.7 // indirect
 	github.com/k0kubun/go-ansi v0.0.0-20180517002512-3bf9e2903213 // indirect
 	github.com/kolo/xmlrpc v0.0.0-20200310150728-e0350524596b // indirect
-	github.com/konsorten/go-windows-terminal-sequences v1.0.2 // indirect
 	github.com/labbsr0x/bindman-dns-webhook v1.0.2 // indirect
 	github.com/labbsr0x/goh v1.0.1 // indirect
 	github.com/linode/linodego v0.31.1 // indirect
@@ -84,7 +83,6 @@ require (
 	github.com/pquerna/otp v1.3.0 // indirect
 	github.com/sacloud/libsacloud v1.36.2 // indirect
 	github.com/scaleway/scaleway-sdk-go v1.0.0-beta.7.0.20210127161313-bd30bebeac4f // indirect
-	github.com/sirupsen/logrus v1.4.2 // indirect
 	github.com/smartystreets/go-aws-auth v0.0.0-20180515143844-0c1422d1fdb9 // indirect
 	github.com/softlayer/softlayer-go v1.0.3 // indirect
 	github.com/softlayer/xmlrpc v0.0.0-20200409220501-5f089df7cb7e // indirect
@@ -97,8 +95,6 @@ require (
 	github.com/vinyldns/go-vinyldns v0.9.16 // indirect
 	github.com/vultr/govultr/v2 v2.7.1 // indirect
 	go.opencensus.io v0.22.3 // indirect
-	go.uber.org/atomic v1.9.0 // indirect
-	go.uber.org/multierr v1.8.0 // indirect
 	go.uber.org/ratelimit v0.0.0-20180316092928-c15da0234277 // indirect
 	golang.org/x/crypto v0.0.0-20220321153916-2c7772ba3064 // indirect
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d // indirect

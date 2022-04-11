@@ -17,3 +17,15 @@ tasks:
       - cmd: docker buildx rm acme_builder
         ignore_error: true
     silent: false
+  
+  docker:deploy:test:
+    cmds:
+      - cmd: docker buildx rm acme_builder # just in case task was exited early by the user
+        ignore_error: true
+      - cmd: docker buildx create --name acme_builder --use
+        ignore_error: true
+      - cmd: docker buildx build --push --platform linux/amd64 -t timhinz/ssl-testing:latest -f docker/Dockerfile .
+        ignore_error: true
+      - cmd: docker buildx rm acme_builder
+        ignore_error: true
+    silent: false
