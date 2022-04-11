@@ -31,7 +31,7 @@ func requestCertificate(w http.ResponseWriter, req *http.Request, challengeType 
 	if err := acme.Run(domainName, challengeType); err != nil {
 		log.Errorf("Error issuing certificate for %s\r\n%v", domainName, err)
 		fmt.Fprintf(w, "Error issuing certificate for %s\r\n%v", domainName, err)
+	} else {
+		fmt.Fprintf(w, "Certificate issued for %s", domainName)
 	}
-
-	fmt.Fprintf(w, "Certificate issued for %s", domainName)
 }
