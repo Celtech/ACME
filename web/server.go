@@ -2,30 +2,34 @@ package web
 
 import (
 	"baker-acme/internal/context"
-	"baker-acme/web/api"
+	"baker-acme/web/middleware"
 	"fmt"
-
 	"net"
-	"net/http"
-	"sync"
 
+	"net/http"
+
+	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 )
 
-func StartServer(appContext *context.AppContext, wg *sync.WaitGroup) *http.Server {
+func StartServer(appContext *context.AppContext) *http.Server {
+	gin.SetMode(gin.ReleaseMode)
+	router := gin.New()
+	router.Use(gin.Recovery())
+	router.Use(middleware.LoggingMiddleware)
+
+	configRoutes(router)
+
 	srv := &http.Server{
 		Addr: fmt.Sprintf(
 			"%s:%d",
 			appContext.ConfigFactory.Server.Host,
 			appContext.ConfigFactory.Server.Port,
 		),
+		Handler: router,
 	}
 
-	router()
-
 	go func() {
-		defer wg.Done() // let main know we are done cleaning up
-
 		log.Infof(
 			"server starting, listening on %s:%d",
 			appContext.ConfigFactory.Server.Host,
@@ -40,22 +44,4 @@ func StartServer(appContext *context.AppContext, wg *sync.WaitGroup) *http.Serve
 	}()
 
 	return srv
-}
-
-func router() {
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintln(w, "Usage:")
-		fmt.Fprintf(w, "# GET - %s/request\r\n", r.Host)
-		fmt.Fprintf(w, "Used to request a new SSL certificate for a given domain.\r\n\r\n")
-
-		fmt.Fprintf(w, "# GET - %s/check\r\n", r.Host)
-		fmt.Fprintf(w, "Used to fetch the expiration date of a SSL certificate a given domain.\r\n\r\n")
-
-		fmt.Fprintf(w, "# GET - %s/renew\r\n", r.Host)
-		fmt.Fprintf(w, "Used to force renew a SSL certificate for a given domain.\r\n")
-	})
-
-	http.HandleFunc("/api/request/tls", api.RequestCertificateWithTLS)
-	http.HandleFunc("/api/request/http", api.RequestCertificateWithHTTP)
-	http.HandleFunc("/api/request/dns", api.RequestCertificateWithDNS)
 }

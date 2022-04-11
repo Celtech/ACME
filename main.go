@@ -7,7 +7,6 @@ import (
 	"os"
 	"os/signal"
 	"strconv"
-	"sync"
 	"syscall"
 	"time"
 
@@ -64,15 +63,15 @@ func main() {
 		}
 	}()
 
-	httpServerExitDone := &sync.WaitGroup{}
-	httpServerExitDone.Add(1)
-	srv := web.StartServer(appContext, httpServerExitDone)
+	srv := web.StartServer(appContext)
 
 	<-finishUP
 	log.Info("attempting graceful shutdown")
 
-	srv.Shutdown(con.Background())
-	httpServerExitDone.Wait()
+	// 1 second less than force shutdown time
+	ctx, cancel := con.WithTimeout(con.Background(), 29*time.Second)
+	defer cancel()
+	srv.Shutdown(ctx)
 
 	log.Info("graceful shutdown complete")
 
