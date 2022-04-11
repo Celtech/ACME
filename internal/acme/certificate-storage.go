@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"crypto/x509"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -68,7 +67,7 @@ func (s *CertificatesStorage) CreateRootFolder() error {
 func (s *CertificatesStorage) CreateArchiveFolder() {
 	err := createNonExistingFolder(s.archivePath)
 	if err != nil {
-		log.Fatalf("Could not check/create path: %v", err)
+		log.Errorf("Could not check/create path: %v", err)
 	}
 }
 
@@ -83,16 +82,16 @@ func (s *CertificatesStorage) SaveResource(certRes *certificate.Resource) error 
 	// as web servers would not be able to work with a combined file.
 	err := s.WriteFile(domain, ".crt", certRes.Certificate)
 	if err != nil {
-		return errors.New(
-			fmt.Sprintf("Unable to save Certificate for domain %s\n\t%v", domain, err),
+		return fmt.Errorf(
+			"unable to save certificate for domain %s\n\t%v", domain, err,
 		)
 	}
 
 	if certRes.IssuerCertificate != nil {
 		err = s.WriteFile(domain, ".issuer.crt", certRes.IssuerCertificate)
 		if err != nil {
-			return errors.New(
-				fmt.Sprintf("Unable to save IssuerCertificate for domain %s\n\t%v", domain, err),
+			return fmt.Errorf(
+				"unable to save IssuerCertificate for domain %s\n\t%v", domain, err,
 			)
 		}
 	}
@@ -101,28 +100,27 @@ func (s *CertificatesStorage) SaveResource(certRes *certificate.Resource) error 
 	if certRes.PrivateKey != nil {
 		err = s.WriteCertificateFiles(domain, certRes)
 		if err != nil {
-			return errors.New(
-				fmt.Sprintf("Unable to save PrivateKey for domain %s\n\t%v", domain, err),
+			return fmt.Errorf(
+				"unable to save PrivateKey for domain %s\n\t%v", domain, err,
 			)
 		}
 	} else if s.pem || s.pfx {
-		return errors.New(
-			// we don't have the private key; can't write the .pem or .pfx file
-			fmt.Sprintf("Unable to save PEM or PFX without private key for domain %s. Are you using a CSR?", domain),
+		return fmt.Errorf(
+			"unable to save PEM without private key for domain %s. Are you using a CSR?", domain,
 		)
 	}
 
 	jsonBytes, err := json.MarshalIndent(certRes, "", "\t")
 	if err != nil {
-		return errors.New(
-			fmt.Sprintf("Unable to marshal CertResource for domain %s\n\t%v", domain, err),
+		return fmt.Errorf(
+			"unable to marshal CertResource for domain %s\n\t%v", domain, err,
 		)
 	}
 
 	err = s.WriteFile(domain, ".json", jsonBytes)
 	if err != nil {
-		return errors.New(
-			fmt.Sprintf("Unable to save CertResource for domain %s\n\t%v", domain, err),
+		return fmt.Errorf(
+			"unable to save CertResource for domain %s\n\t%v", domain, err,
 		)
 	}
 
@@ -132,12 +130,12 @@ func (s *CertificatesStorage) SaveResource(certRes *certificate.Resource) error 
 func (s *CertificatesStorage) ReadResource(domain string) certificate.Resource {
 	raw, err := s.ReadFile(domain, ".json")
 	if err != nil {
-		log.Fatalf("Error while loading the meta data for domain %s\n\t%v", domain, err)
+		log.Errorf("error while loading the meta data for domain %s\n\t%v", domain, err)
 	}
 
 	var resource certificate.Resource
 	if err = json.Unmarshal(raw, &resource); err != nil {
-		log.Fatalf("Error while marshaling the meta data for domain %s\n\t%v", domain, err)
+		log.Errorf("error while marshaling the meta data for domain %s\n\t%v", domain, err)
 	}
 
 	return resource
@@ -149,7 +147,7 @@ func (s *CertificatesStorage) ExistsFile(domain, extension string) bool {
 	if _, err := os.Stat(filePath); os.IsNotExist(err) {
 		return false
 	} else if err != nil {
-		log.Fatal(err)
+		log.Error(err)
 	}
 	return true
 }
@@ -240,7 +238,7 @@ func (s *CertificatesStorage) MoveToArchive(domain string) error {
 func sanitizedDomain(domain string) string {
 	safe, err := idna.ToASCII(strings.ReplaceAll(domain, "*", "_"))
 	if err != nil {
-		log.Fatal(err)
+		log.Error(err)
 	}
 	return safe
 }

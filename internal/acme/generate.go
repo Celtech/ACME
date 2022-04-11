@@ -1,7 +1,6 @@
 package acme
 
 import (
-	"errors"
 	"fmt"
 	"os"
 	"time"
@@ -46,8 +45,8 @@ func Run(domainName string, challengeType string) error {
 	if account.Registration == nil {
 		reg, err := register(client)
 		if err != nil {
-			return errors.New(
-				fmt.Sprintf("Could not complete registration\n\t%v\n", err),
+			return fmt.Errorf(
+				"could not complete registration\n\t%v", err,
 			)
 		}
 
@@ -66,8 +65,8 @@ func Run(domainName string, challengeType string) error {
 
 	cert, err := obtainCertificate(domainName, client)
 	if err != nil {
-		return errors.New(
-			fmt.Sprintf("Could not obtain certificates:\n\t%v", err),
+		return fmt.Errorf(
+			"could not obtain certificates:\n\t%v", err,
 		)
 	}
 
@@ -120,8 +119,8 @@ func newClient(acc registration.User, keyType certcrypto.KeyType) (*lego.Client,
 
 	client, err := lego.NewClient(config)
 	if err != nil {
-		return nil, errors.New(
-			fmt.Sprintf("Could not create client: %v\n", err),
+		return nil, fmt.Errorf(
+			"could not create client: %v\n", err,
 		)
 	}
 
@@ -138,7 +137,7 @@ func createNonExistingFolder(path string) error {
 }
 
 func obtainCertificate(domainName string, client *lego.Client) (*certificate.Resource, error) {
-	log.Infof("Requesting certificate for: %s\n", domainName)
+	log.Infof("requesting certificate for: %s\n", domainName)
 
 	// obtain a certificate, generating a new private key
 	request := certificate.ObtainRequest{

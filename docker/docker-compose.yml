@@ -11,6 +11,7 @@ services:
       - "5002:5002"
     environment:
       BAKER_ACME_PROVIDER_EMAIL: "tim@chargeover.com"
+      BAKER_COLOR_LOGS: "false"
     volumes:
       - data:/data
 

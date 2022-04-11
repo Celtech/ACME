@@ -6,6 +6,7 @@ import (
 	con "context"
 	"os"
 	"os/signal"
+	"strconv"
 	"sync"
 	"syscall"
 	"time"
@@ -16,6 +17,18 @@ import (
 var appContext *context.AppContext
 
 func init() {
+	var colorLogOutput bool
+	if colorLogs := os.Getenv("BAKER_COLOR_LOGS"); len(colorLogs) == 0 {
+		colorLogOutput = true
+	} else {
+		colorLogOutput, _ = strconv.ParseBool(colorLogs)
+	}
+
+	log.SetFormatter(&log.TextFormatter{
+		DisableColors: !colorLogOutput,
+		FullTimestamp: true,
+	})
+
 	appContext = context.NewAppContext(nil)
 }
 
