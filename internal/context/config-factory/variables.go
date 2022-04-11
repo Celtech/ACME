@@ -1,7 +1,6 @@
 package configFactory
 
 import (
-	"errors"
 	"fmt"
 	"os"
 
@@ -19,7 +18,7 @@ func getValueFromVariable(variableName string) (string, error) {
 	err := (error)(nil)
 
 	if len(variableValue) == 0 {
-		err = errors.New(fmt.Sprintf("variable %s not found", variableName))
+		err = fmt.Errorf("variable %s not found", variableName)
 	}
 
 	return variableValue, err
