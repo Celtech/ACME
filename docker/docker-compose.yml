@@ -7,13 +7,28 @@ services:
       context: ..
     ports:
       - "9022:9022"
-      - "5001:5001"
-      - "5002:5002"
+      - "80:80"
+      - "443:443"
+    networks:
+        - baker-acme
     environment:
       BAKER_ACME_PROVIDER_EMAIL: "tim@chargeover.com"
       BAKER_COLOR_LOGS: "false"
     volumes:
       - data:/data
 
+  redis:
+    image: redis:6.2.6-alpine3.15
+    expose:
+          - "6379"
+    networks:
+        - baker-acme
+    healthcheck:
+        test: [ "CMD", "redis-cli","ping" ]
+
 volumes:
   data:
+
+networks:
+  baker-acme:
+    driver: bridge

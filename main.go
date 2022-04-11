@@ -2,6 +2,7 @@ package main
 
 import (
 	"baker-acme/internal/context"
+	"baker-acme/internal/queue"
 	"baker-acme/web"
 	con "context"
 	"os"
@@ -14,6 +15,7 @@ import (
 )
 
 var appContext *context.AppContext
+var queueManager *queue.QueueManager
 
 func init() {
 	var colorLogOutput bool
@@ -29,6 +31,7 @@ func init() {
 	})
 
 	appContext = context.NewAppContext(nil)
+	queueManager = queue.NewQueue("certificate-request")
 }
 
 func main() {
@@ -64,6 +67,13 @@ func main() {
 	}()
 
 	srv := web.StartServer(appContext)
+
+	// queueManager.Publish("test1")
+	// queueManager.Publish("test2")
+	// queueManager.Publish("test3")
+	// log.Info("Waiting to sub")
+	// time.Sleep(10 * time.Second)
+	// queueManager.Subscribe()
 
 	<-finishUP
 	log.Info("attempting graceful shutdown")

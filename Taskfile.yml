@@ -5,6 +5,10 @@ tasks:
     cmds:
       - cmd: docker build -t git.rykelabs.com:5050/rykelabs/acme-server:latest -f docker/Dockerfile .
     silent: false
+
+  docker:start:
+    cmds:
+      - cmd: docker compose -f docker/docker-compose.yml up --build --force-recreate
   
   docker:deploy:
     cmds:
