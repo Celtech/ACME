@@ -5,5 +5,6 @@ Test:Unit Test:
   variables:
     CGO_ENABLED: 0
   script:
-    - go test -short $(go list ./... | grep -v /vendor/)
+    - go test -race $(go list ./... | grep -v /vendor/)
+
 

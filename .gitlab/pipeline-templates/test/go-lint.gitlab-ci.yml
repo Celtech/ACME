@@ -5,5 +5,6 @@ Test:Go Lint:
   variables:
     CGO_ENABLED: 0
   script:
+    - go fmt $(go list ./... | grep -v /vendor/)
     - go vet $(go list ./... | grep -v /vendor/)
 

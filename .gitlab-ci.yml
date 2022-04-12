@@ -27,9 +27,17 @@ workflow:
     - if: '$CI_PIPELINE_SOURCE == "schedule"'
 
 include:
+  - local: '.gitlab/pipeline-templates/build/kaniko.gitlab-ci.yml'
   - local: '.gitlab/pipeline-templates/test/unit-test.gitlab-ci.yml'
   - local: '.gitlab/pipeline-templates/test/go-lint.gitlab-ci.yml'
-  - local: '.gitlab/pipeline-templates/build/kaniko.gitlab-ci.yml'
+  - template: Jobs/Code-Quality.gitlab-ci.yml  # https://gitlab.com/gitlab-org/gitlab/blob/master/lib/gitlab/ci/templates/Jobs/Code-Quality.gitlab-ci.yml
+  - template: Jobs/Code-Intelligence.gitlab-ci.yml  # https://gitlab.com/gitlab-org/gitlab/blob/master/lib/gitlab/ci/templates/Jobs/Code-Intelligence.gitlab-ci.yml
+  - template: Security/DAST.gitlab-ci.yml  # https://gitlab.com/gitlab-org/gitlab/blob/master/lib/gitlab/ci/templates/Security/DAST.gitlab-ci.yml
+  - template: Security/Container-Scanning.gitlab-ci.yml  # https://gitlab.com/gitlab-org/gitlab/blob/master/lib/gitlab/ci/templates/Security/Container-Scanning.gitlab-ci.yml
+  - template: Security/Dependency-Scanning.gitlab-ci.yml  # https://gitlab.com/gitlab-org/gitlab/blob/master/lib/gitlab/ci/templates/Security/Dependency-Scanning.gitlab-ci.yml
+  - template: Security/License-Scanning.gitlab-ci.yml  # https://gitlab.com/gitlab-org/gitlab/blob/master/lib/gitlab/ci/templates/Security/License-Scanning.gitlab-ci.yml
+  - template: Security/SAST.gitlab-ci.yml  # https://gitlab.com/gitlab-org/gitlab/blob/master/lib/gitlab/ci/templates/Security/SAST.gitlab-ci.yml
+  - template: Security/Secret-Detection.gitlab-ci.yml
 
 .go-cache:
   variables:
