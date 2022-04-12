@@ -1,0 +1,6 @@
+Test:Unit Test:
+  image: golang:1.16-alpine
+  stage: test
+  script:
+    - go test -short $(go list ./... | grep -v /vendor/)
+
