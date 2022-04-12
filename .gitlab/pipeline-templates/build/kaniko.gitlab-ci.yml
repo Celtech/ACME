@@ -11,5 +11,9 @@ build:
       --context "${CI_PROJECT_DIR}"
       --dockerfile "${CI_PROJECT_DIR}/docker/Dockerfile"
       --destination "${CI_REGISTRY_IMAGE}:latest"
+      --cache=true
+      --cache-repo "${CI_REGISTRY_IMAGE}/cache"
+      --cache-ttl 2190h0m0s
+
   # rules:
   #   - if: $CI_COMMIT_TAG
