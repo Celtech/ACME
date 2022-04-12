@@ -3,8 +3,8 @@ package acme
 import (
 	"crypto"
 
-	"github.com/go-acme/lego/v4/certcrypto"
-	"github.com/go-acme/lego/v4/registration"
+	certcrypto "baker-acme/internal/acme/crypto"
+	"baker-acme/internal/acme/registration"
 )
 
 const acctKeyType = certcrypto.EC256

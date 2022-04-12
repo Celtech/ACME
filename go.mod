@@ -3,11 +3,16 @@ module baker-acme
 go 1.17
 
 require (
+	github.com/cenkalti/backoff/v4 v4.1.1
 	github.com/gin-gonic/gin v1.7.7
 	github.com/go-acme/lego/v4 v4.6.0
 	github.com/go-redis/redis/v8 v8.11.5
+	github.com/miekg/dns v1.1.43
 	github.com/sirupsen/logrus v1.8.1
+	github.com/stretchr/testify v1.7.0
+	golang.org/x/crypto v0.0.0-20220408190544-5352b0902921
 	golang.org/x/net v0.0.0-20211112202133-69e39bad7dc2
+	gopkg.in/square/go-jose.v2 v2.6.0
 )
 
 require (
@@ -28,7 +33,6 @@ require (
 	github.com/aliyun/alibaba-cloud-sdk-go v1.61.1183 // indirect
 	github.com/aws/aws-sdk-go v1.39.0 // indirect
 	github.com/boombuler/barcode v1.0.1-0.20190219062509-6c824513bacc // indirect
-	github.com/cenkalti/backoff/v4 v4.1.1 // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/cloudflare/cloudflare-go v0.20.0 // indirect
 	github.com/cpu/goacmedns v0.1.1 // indirect
@@ -71,7 +75,6 @@ require (
 	github.com/liquidweb/liquidweb-cli v0.6.9 // indirect
 	github.com/liquidweb/liquidweb-go v1.6.3 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
-	github.com/miekg/dns v1.1.43 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/mitchellh/mapstructure v1.4.1 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
@@ -97,7 +100,6 @@ require (
 	github.com/softlayer/xmlrpc v0.0.0-20200409220501-5f089df7cb7e // indirect
 	github.com/spf13/cast v1.3.1 // indirect
 	github.com/stretchr/objx v0.3.0 // indirect
-	github.com/stretchr/testify v1.7.0 // indirect
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.0.287 // indirect
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.0.287 // indirect
 	github.com/transip/gotransip/v6 v6.6.1 // indirect
@@ -106,7 +108,6 @@ require (
 	github.com/vultr/govultr/v2 v2.7.1 // indirect
 	go.opencensus.io v0.22.3 // indirect
 	go.uber.org/ratelimit v0.0.0-20180316092928-c15da0234277 // indirect
-	golang.org/x/crypto v0.0.0-20220408190544-5352b0902921 // indirect
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d // indirect
 	golang.org/x/sys v0.0.0-20220408201424-a24fb2fb8a0f // indirect
 	golang.org/x/text v0.3.7 // indirect
@@ -118,7 +119,6 @@ require (
 	google.golang.org/protobuf v1.28.0 // indirect
 	gopkg.in/ini.v1 v1.62.0 // indirect
 	gopkg.in/ns1/ns1-go.v2 v2.6.2 // indirect
-	gopkg.in/square/go-jose.v2 v2.6.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 )

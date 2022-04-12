@@ -11,8 +11,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/go-acme/lego/v4/certcrypto"
-	"github.com/go-acme/lego/v4/certificate"
+	"baker-acme/internal/acme/certificate"
+	certcrypto "baker-acme/internal/acme/crypto"
+
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/net/idna"
 )

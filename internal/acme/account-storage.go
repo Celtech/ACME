@@ -12,9 +12,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/go-acme/lego/v4/certcrypto"
-	"github.com/go-acme/lego/v4/lego"
-	"github.com/go-acme/lego/v4/registration"
+	lego "baker-acme/internal/acme/client"
+	certcrypto "baker-acme/internal/acme/crypto"
+	"baker-acme/internal/acme/registration"
 	log "github.com/sirupsen/logrus"
 )
 

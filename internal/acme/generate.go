@@ -5,10 +5,11 @@ import (
 	"os"
 	"time"
 
-	"github.com/go-acme/lego/v4/certcrypto"
-	"github.com/go-acme/lego/v4/certificate"
-	"github.com/go-acme/lego/v4/lego"
-	"github.com/go-acme/lego/v4/registration"
+	"baker-acme/internal/acme/certificate"
+	lego "baker-acme/internal/acme/client"
+	"baker-acme/internal/acme/crypto"
+	"baker-acme/internal/acme/registration"
+
 	log "github.com/sirupsen/logrus"
 )
 
@@ -101,7 +102,7 @@ func register(client *lego.Client) (*registration.Resource, error) {
 	return client.Registration.Register(registration.RegisterOptions{TermsOfServiceAgreed: true})
 }
 
-func newClient(acc registration.User, keyType certcrypto.KeyType) (*lego.Client, error) {
+func newClient(acc registration.User, keyType crypto.KeyType) (*lego.Client, error) {
 	acmeHost := os.Getenv("ACME_HOST")
 	if len(acmeHost) == 0 {
 		acmeHost = acmeServer
@@ -120,7 +121,7 @@ func newClient(acc registration.User, keyType certcrypto.KeyType) (*lego.Client,
 	client, err := lego.NewClient(config)
 	if err != nil {
 		return nil, fmt.Errorf(
-			"could not create client: %v\n", err,
+			"could not create client: %v", err,
 		)
 	}
 
@@ -137,7 +138,7 @@ func createNonExistingFolder(path string) error {
 }
 
 func obtainCertificate(domainName string, client *lego.Client) (*certificate.Resource, error) {
-	log.Infof("requesting certificate for: %s\n", domainName)
+	log.Infof("requesting certificate for: %s", domainName)
 
 	// obtain a certificate, generating a new private key
 	request := certificate.ObtainRequest{

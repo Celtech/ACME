@@ -4,18 +4,19 @@ import (
 	"os"
 	"time"
 
-	"github.com/go-acme/lego/v4/challenge"
-	"github.com/go-acme/lego/v4/challenge/dns01"
-	"github.com/go-acme/lego/v4/challenge/http01"
-	"github.com/go-acme/lego/v4/challenge/tlsalpn01"
+	"baker-acme/internal/acme/challenge"
+	"baker-acme/internal/acme/challenge/dns01"
+	"baker-acme/internal/acme/challenge/http01"
+	"baker-acme/internal/acme/challenge/tlsalpn01"
+
 	"github.com/go-acme/lego/v4/providers/dns"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/go-acme/lego/v4/lego"
+	lego "baker-acme/internal/acme/client"
 )
 
 func SetupChallenges(client *lego.Client, challengeType string) error {
-	log.Infof("Starting HTTP and TLS challenge servers")
+	log.Infof("Starting challenge servers")
 
 	switch challengeType {
 	case CHALLENGE_TYPE_HTTP:
@@ -52,10 +53,10 @@ func setupHTTPProvider() challenge.Provider {
 	httpProxyHeader := os.Getenv("HTTP_CHALLENGE_PROXY_HEADER")
 	if len(httpProxyHeader) > 0 {
 		srv.SetProxyHeader(httpProxyHeader)
-		log.Infof("HTTP challenge server using proxy header %s\n", httpProxyHeader)
+		log.Infof("HTTP challenge server using proxy header %s", httpProxyHeader)
 	}
 
-	log.Infof("HTTP challenge server listening on %s:%s\n", httpHost, httpPort)
+	log.Infof("HTTP challenge server listening on %s:%s", httpHost, httpPort)
 
 	return srv
 }
@@ -71,7 +72,7 @@ func setupTLSProvider() challenge.Provider {
 		tlsPort = "5002"
 	}
 
-	log.Infof("TLS challenge server listening on %s:%s\n", tlsHost, tlsPort)
+	log.Infof("TLS challenge server listening on %s:%s", tlsHost, tlsPort)
 
 	return tlsalpn01.NewProviderServer(tlsHost, tlsPort)
 }
