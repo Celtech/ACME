@@ -27,4 +27,14 @@ workflow:
     - if: '$CI_PIPELINE_SOURCE == "schedule"'
 
 include:
+  # - local: '.gitlab/pipeline-templates/build/kaniko.gitlab-ci.yml'
   - local: '.gitlab/pipeline-templates/test/unit-test.gitlab-ci.yml'
+
+.go-cache:
+  variables:
+    GOPATH: $CI_PROJECT_DIR/.go
+  before_script:
+    - mkdir -p .go
+  cache:
+    paths:
+      - .go/pkg/mod/

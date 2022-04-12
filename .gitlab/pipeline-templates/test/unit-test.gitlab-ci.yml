@@ -1,6 +1,9 @@
 Test:Unit Test:
   image: golang:1.16-alpine
   stage: test
+  extends: .go-cache
+  variables:
+    CGO_ENABLED: 0
   script:
     - go test -short $(go list ./... | grep -v /vendor/)
 
