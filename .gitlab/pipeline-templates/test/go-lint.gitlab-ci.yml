@@ -1,0 +1,9 @@
+Test:Go Lint:
+  image: golang:1.16-alpine
+  stage: test
+  extends: .go-cache
+  variables:
+    CGO_ENABLED: 0
+  script:
+    - go vet $(go list ./... | grep -v /vendor/)
+
