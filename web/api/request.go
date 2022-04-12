@@ -5,6 +5,9 @@ import (
 	"baker-acme/internal/util"
 	"fmt"
 	"net/http"
+	"time"
+
+	"baker-acme/internal/queue"
 
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
@@ -38,16 +41,27 @@ func requestCertificate(c *gin.Context, challengeType string) {
 		log.Error(err)
 	}
 
-	if err := acme.Run(domainName, challengeType); err != nil {
-		log.Errorf("Error issuing certificate for %s\r\n%v", domainName, err)
+	evt := queue.QueueEvent{
+		Domain:        domainName,
+		ChallengeType: challengeType,
+		Type:          queue.EVENT_REQUEST,
+		Attempt:       0,
+		CreatedAt:     time.Now(),
+	}
+	if err := queue.QueueMgr.Publish(evt); err != nil {
+		log.Errorf("error publishing certificate request for domain %s to queue, %v", domainName, err)
 
 		c.JSON(400, gin.H{
-			"message": fmt.Sprintf("Error issuing certificate for %s", domainName),
+			"message": fmt.Sprintf("error publishing certificate request for domain %s to queue", domainName),
 			"error":   err.Error(),
 		})
 	} else {
 		c.JSON(200, gin.H{
-			"message": fmt.Sprintf("Certificate issued for %s", domainName),
+			"message": fmt.Sprintf(
+				"queued certificate request for %s",
+				domainName,
+			),
+			"request_status": "http://example.com/api/request/1234564634",
 		})
 	}
 }
