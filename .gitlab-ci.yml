@@ -3,11 +3,11 @@ default:
   interruptible: true
   timeout: 90m
   tags:
-    - docker
+    - dind
 
 stages:
-  - "test"
   - "build"
+  - "test"
 
 variables:
   DOCKER_VERSION: 20.10.8
