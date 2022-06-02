@@ -18,3 +18,7 @@ go.work
 
 # Output directory
 out
+
+# OpenAPI
+docs/v3/.openapi-*
+docs/v3/README.md

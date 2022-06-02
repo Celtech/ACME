@@ -1,0 +1,69 @@
+basePath: /api/v1
+host: acme.chargeover.com:9022
+info:
+  contact:
+    email: tim@chargeover.com
+    name: API Support
+    url: https://git.rykelabs.com/rykelabs/acme-server/-/issues/new
+  description: |-
+    # Authorization
+
+    Some description
+
+    <!-- ReDoc-Inject: <security-definitions> -->
+  license:
+    name: MIT
+    url: https://git.rykelabs.com/rykelabs/acme-server/-/blob/main/LICENSE.md
+  termsOfService: https://chargeover.com/terms-of-service
+  title: ACME API
+  version: "1.0"
+paths:
+  /certificate/request:
+    post:
+      consumes:
+      - application/json
+      description: do pong
+      parameters:
+      - description: Add account
+        in: body
+        name: account
+        required: true
+        schema:
+          type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: pong example
+      tags:
+      - idk
+  /example/helloworld:
+    get:
+      consumes:
+      - application/json
+      description: do ping
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: ping example
+      tags:
+      - example
+produces:
+- application/json
+schemes:
+- https
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
