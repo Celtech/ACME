@@ -28,5 +28,5 @@ workflow:
 
 include:
   - local: '.gitlab/pipeline-templates/build/kaniko.gitlab-ci.yml'
-  - local: '.gitlab/pipeline-templates/test/unit-test.gitlab-ci.yml'
-  - local: '.gitlab/pipeline-templates/test/go-lint.gitlab-ci.yml'
+  # - local: '.gitlab/pipeline-templates/test/unit-test.gitlab-ci.yml'
+  # - local: '.gitlab/pipeline-templates/test/go-lint.gitlab-ci.yml'

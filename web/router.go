@@ -3,14 +3,18 @@ package web
 import (
 	"baker-acme/web/api"
 
+	docs "baker-acme/docs"
+
 	"github.com/gin-gonic/gin"
+	swaggerfiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func configRoutes(router *gin.Engine) {
 	rootGroup := router.Group("/")
 	{
 		rootRouter(rootGroup)
-		apiRouter(rootGroup)
+		apiRouterV1(rootGroup)
 	}
 
 }
@@ -27,16 +31,17 @@ func rootRouter(router *gin.RouterGroup) {
 			"message": "welcome",
 		})
 	})
+
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 }
 
-func apiRouter(router *gin.RouterGroup) {
-	apiGroup := router.Group("/api")
+func apiRouterV1(router *gin.RouterGroup) {
+	docs.SwaggerInfo.BasePath = "/api/v1"
+	apiGroup := router.Group("/api/v1")
 	{
-		apiRequestGroup := apiGroup.Group("/request")
+		apiRequestGroup := apiGroup.Group("/certificate")
 		{
-			apiRequestGroup.POST("/tls", api.RequestCertificateWithTLS)
-			apiRequestGroup.POST("/http", api.RequestCertificateWithHTTP)
-			apiRequestGroup.POST("/dns", api.RequestCertificateWithDNS)
+			apiRequestGroup.POST("/", api.RequestCertificate)
 		}
 	}
 }

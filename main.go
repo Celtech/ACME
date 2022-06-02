@@ -33,6 +33,32 @@ func init() {
 	queue.QueueMgr = queue.NewQueue("certificate-request")
 }
 
+// @title           ACME API
+// @version         1.0
+// @description     Issue dynamic SSL certificates for 1+n domains.
+// @description.markdown
+// @termsOfService  https://chargeover.com/terms-of-service
+
+// @contact.name   API Support
+// @contact.url    https://git.rykelabs.com/rykelabs/acme-server/-/issues/new
+// @contact.email  tim@chargeover.com
+
+// @license.name  MIT
+// @license.url   https://git.rykelabs.com/rykelabs/acme-server/-/blob/main/LICENSE.md
+
+// @host      acme.chargeover.com:9022
+// @BasePath  /api/v1
+
+// @accept	json
+// @produce json
+
+// @schemes https
+
+// @securityDefinitions.apikey  ApiKeyAuth
+// @in                          header
+// @name                        Authorization
+// @description					Description for what is this security definition being used
+
 func main() {
 	var returnCode = make(chan int)
 	var finishUP = make(chan struct{})

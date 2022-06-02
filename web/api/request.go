@@ -1,7 +1,6 @@
 package api
 
 import (
-	"baker-acme/internal/acme"
 	"baker-acme/internal/util"
 	"fmt"
 	"net/http"
@@ -14,22 +13,22 @@ import (
 )
 
 type CreateCertificateInput struct {
-	Domain string `json:"domain" binding:"required"`
+	Domain        string `json:"domain" binding:"required"`
+	ChallengeType string `json:"challengeType" binding:"required"`
 }
 
-func RequestCertificateWithDNS(c *gin.Context) {
-	requestCertificate(c, acme.CHALLENGE_TYPE_DNS)
-}
+// @BasePath /api/v1
 
-func RequestCertificateWithHTTP(c *gin.Context) {
-	requestCertificate(c, acme.CHALLENGE_TYPE_HTTP)
-}
-
-func RequestCertificateWithTLS(c *gin.Context) {
-	requestCertificate(c, acme.CHALLENGE_TYPE_TLS)
-}
-
-func requestCertificate(c *gin.Context, challengeType string) {
+// PingExample godoc
+// @Summary ping example
+// @Schemes
+// @Description do ping
+// @Tags example
+// @Accept json
+// @Produce json
+// @Success 200 {string} Helloworld
+// @Router /example/helloworld [get]
+func RequestCertificate(c *gin.Context) {
 	var input CreateCertificateInput
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -41,6 +40,27 @@ func requestCertificate(c *gin.Context, challengeType string) {
 		log.Error(err)
 	}
 
+	challengeType, err := util.ParseDomainName(input.ChallengeType)
+	if err != nil {
+		log.Error(err)
+	}
+
+	requestCertificate(c, domainName, challengeType)
+}
+
+// PongExample godoc
+// @Summary pong example
+// @Security     ApiKeyAuth
+// @Schemes
+// @Description do pong
+// @Tags idk
+// @Accept json
+// @Produce json
+// @Param	account	body	int  true	"Add account"
+// @Success 200 {string} string	"ok"
+// @Router /certificate/request [post]
+// x-codeSamples file
+func requestCertificate(c *gin.Context, domainName string, challengeType string) {
 	evt := queue.QueueEvent{
 		Domain:        domainName,
 		ChallengeType: challengeType,

@@ -13,7 +13,12 @@ import (
 )
 
 func StartServer(appContext *context.AppContext) *http.Server {
-	gin.SetMode(gin.ReleaseMode)
+	if appContext.ConfigFactory.DebugMode {
+		gin.SetMode(gin.DebugMode)
+	} else {
+		gin.SetMode(gin.ReleaseMode)
+	}
+
 	router := gin.New()
 	router.Use(gin.Recovery())
 	router.Use(middleware.LoggingMiddleware)
