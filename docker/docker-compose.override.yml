@@ -1,0 +1,47 @@
+version: "3.8"
+
+services:
+  app:
+    build: 
+      dockerfile: "./docker/Dockerfile"
+      context: ..
+    ports:
+      - "9022:9022"
+      - "80:80"
+      - "443:443"
+      
+  mariadb:
+    image: mariadb:10.3.17
+    container_name: rykelabs-acme-mariadb
+    expose:
+      - "3306"
+    networks:
+      - acme-server
+    volumes:
+      - acme-mariadb:/var/lib/mysql
+      - ./conf/mariadb.cnf:/etc/mysql/my.cnf
+    environment:
+      TZ: "America/Chicago"
+      MYSQL_ALLOW_EMPTY_PASSWORD: "no"
+      MYSQL_USER: 'dev'
+      MYSQL_ROOT_PASSWORD: "password"
+      MYSQL_PASSWORD: 'password'
+      MYSQL_DATABASE: 'chargeover_dev'
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "--silent" ]
+
+  redis:
+    image: redis:6.2.6-alpine3.15
+    expose:
+      - "6379"
+    networks:
+      - acme-server
+    healthcheck:
+      test: [ "CMD", "redis-cli","ping" ]
+
+volumes:
+  acme-mariadb:
+
+networks:
+  acme-server:
+    driver: bridge

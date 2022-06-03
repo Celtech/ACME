@@ -2,34 +2,15 @@ version: "3.8"
 
 services:
   app:
-    build: 
-      dockerfile: "./docker/Dockerfile"
-      context: ..
-    ports:
-      - "9022:9022"
-      - "80:80"
-      - "443:443"
+    image: git.rykelabs.com:5050/rykelabs/acme-server:latest
     networks:
-        - baker-acme
+      - acme-server
     environment:
       ACME_ENV: "development"
       BAKER_ACME_PROVIDER_EMAIL: "tim@chargeover.com"
       ACME_HOST: "https://acme-staging-v02.api.letsencrypt.org/directory"
     volumes:
-      - data:/data
-
-  redis:
-    image: redis:6.2.6-alpine3.15
-    expose:
-          - "6379"
-    networks:
-        - baker-acme
-    healthcheck:
-        test: [ "CMD", "redis-cli","ping" ]
+      - acme-data:/data
 
 volumes:
-  data:
-
-networks:
-  baker-acme:
-    driver: bridge
+  acme-data:
