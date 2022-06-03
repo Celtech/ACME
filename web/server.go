@@ -14,10 +14,10 @@ import (
 )
 
 func Serve(conf *viper.Viper) *http.Server {
-	if os.Getenv("ACME_ENV") == "development" {
-		gin.SetMode(gin.DebugMode)
-	} else {
+	if os.Getenv("ACME_ENV") == "production" {
 		gin.SetMode(gin.ReleaseMode)
+	} else {
+		gin.SetMode(gin.DebugMode)
 	}
 
 	router := gin.New()

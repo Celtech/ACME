@@ -13,18 +13,6 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// @BasePath /api/v1
-
-// PingExample godoc
-// @Summary ping example
-// @Schemes
-// @Description do ping
-// @Tags example
-// @Accept json
-// @Produce json
-// @Param request body model.Request true "Add request"
-// @Success 200 {string} Helloworld
-// @Router /example/helloworld [get]
 func RequestCertificate(c *gin.Context) {
 	var input model.Request
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -45,18 +33,6 @@ func RequestCertificate(c *gin.Context) {
 	requestCertificate(c, domainName, challengeType)
 }
 
-// PongExample godoc
-// @Summary pong example
-// @Security     ApiKeyAuth
-// @Schemes
-// @Description do pong
-// @Tags idk
-// @Accept json
-// @Produce json
-// @Param request body model.Request true "Add request"
-// @Success 200 {string} string	"ok"
-// @Router /certificate/request [post]
-// x-codeSamples file
 func requestCertificate(c *gin.Context, domainName string, challengeType string) {
 	evt := queue.QueueEvent{
 		Domain:        domainName,

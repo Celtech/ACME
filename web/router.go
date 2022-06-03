@@ -1,43 +1,33 @@
 package web
 
 import (
-	"baker-acme/web/api"
+	"baker-acme/web/controller"
+	v1 "baker-acme/web/controller/api/v1"
 
 	"github.com/gin-gonic/gin"
 )
 
 func configRoutes(router *gin.Engine) {
-	rootGroup := router.Group("/")
-	{
-		rootRouter(rootGroup)
-		apiRouterV1(rootGroup)
-	}
-
-	// router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
-	router.LoadHTMLFiles("./docs/*")
-	router.StaticFile("/swagger", "./docs/swagger.json")
+	rootRouter(router)
+	apiV1Router(router)
 }
 
-func rootRouter(router *gin.RouterGroup) {
-	router.GET("/ping", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "pong",
-		})
-	})
+func rootRouter(router *gin.Engine) {
+	rootController := new(controller.RootController)
 
-	router.GET("/", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "welcome",
-		})
-	})
+	router.StaticFile("/openapi", "./docs/swagger.json")
+	router.GET("/ping", rootController.Ping)
 }
 
-func apiRouterV1(router *gin.RouterGroup) {
-	apiGroup := router.Group("/api/v1")
+func apiV1Router(router *gin.Engine) {
+	v1Group := router.Group("/api/v1")
 	{
-		apiRequestGroup := apiGroup.Group("/certificate")
+		requestGroup := v1Group.Group("request")
 		{
-			apiRequestGroup.POST("/", api.RequestCertificate)
+			requestController := new(v1.RequestController)
+			requestGroup.GET("/", requestController.GetAll)
+			requestGroup.GET("/:id", requestController.GetOne)
+			requestGroup.POST("/", requestController.CreateNew)
 		}
 	}
 }
