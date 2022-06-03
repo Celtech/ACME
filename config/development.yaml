@@ -3,11 +3,11 @@ server:
   port: 9022
 
 database:
-  host: 127.0.0.1
+  host: rykelabs-acme-mariadb
   port: 3306
-  user: root
+  user: dev
   pass: password
-  name: test_db
+  name: acme_dev
 
 redis:
   host: 127.0.0.1

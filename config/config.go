@@ -1,7 +1,7 @@
 package config
 
 import (
-	"log"
+	log "github.com/sirupsen/logrus"
 
 	"github.com/spf13/viper"
 )
@@ -19,8 +19,7 @@ func Init(env string) *viper.Viper {
 	config.AddConfigPath("config/")
 	err = config.ReadInConfig()
 	if err != nil {
-		log.Fatalf(err.Error())
-		log.Fatal("error on parsing configuration file")
+		log.Fatalf("error parsing configuration file: %v", err.Error())
 	}
 
 	return config

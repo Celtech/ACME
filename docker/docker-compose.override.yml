@@ -5,6 +5,9 @@ services:
     build: 
       dockerfile: "./docker/Dockerfile"
       context: ..
+    depends_on:
+      - mariadb
+      - redis
     ports:
       - "9022:9022"
       - "80:80"

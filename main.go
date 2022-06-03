@@ -4,6 +4,7 @@ import (
 	"baker-acme/config"
 	"baker-acme/internal/queue"
 	"baker-acme/web"
+	"baker-acme/web/service/database"
 	ctx "context"
 	"os"
 	"os/signal"
@@ -24,6 +25,7 @@ func init() {
 		FullTimestamp: true,
 	})
 
+	database.Init()
 	queue.QueueMgr = queue.NewQueue(conf.GetString("redis.name"))
 }
 
