@@ -5,11 +5,10 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	log "github.com/sirupsen/logrus"
 )
 
 type RequestController struct{}
-
-var requestModel = new(model.Request)
 
 // @BasePath /api/v1
 
@@ -25,18 +24,32 @@ var requestModel = new(model.Request)
 // @Success 404 {string} NotFound
 // @Router /request/{id} [get]
 func (requestController RequestController) GetOne(c *gin.Context) {
-	if c.Param("id") != "" {
-		cert, err := requestModel.GetByID(c.Param("id"))
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"message": "Error to retrieve user", "error": err})
-			c.Abort()
-			return
-		}
-		c.JSON(http.StatusOK, gin.H{"message": "User founded!", "user": cert})
+	var requestModel = new(model.Request)
+	if c.Param("id") == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status":  http.StatusBadRequest,
+			"message": "Something went wrong",
+			"error":   "The provided ID is invalid",
+		})
+		c.Abort()
 		return
 	}
-	c.JSON(http.StatusBadRequest, gin.H{"message": "bad request"})
-	c.Abort()
+
+	if err := requestModel.GetByID(c.Param("id")); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status":  http.StatusNotFound,
+			"message": "Something went wrong",
+			"error":   "The requested entity could not be found",
+		})
+		c.Abort()
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"status":  http.StatusOK,
+		"message": "Request GET ONE",
+		"data":    requestModel,
+	})
 }
 
 // @BasePath /api/v1
@@ -50,7 +63,24 @@ func (requestController RequestController) GetOne(c *gin.Context) {
 // @Success 200 {string} Helloworld
 // @Router /request [get]
 func (requestController RequestController) GetAll(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"message": "Request GETALL"})
+	var requestModel = new(model.Request)
+	res, err := requestModel.GetAll()
+	if err != nil {
+		log.Error(err)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status":  http.StatusBadRequest,
+			"message": "Something went wrong",
+			"error":   err.Error(),
+		})
+		c.Abort()
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"status":  http.StatusOK,
+		"message": "Request GET ALL",
+		"data":    res,
+	})
 }
 
 // @BasePath /api/v1
@@ -67,5 +97,33 @@ func (requestController RequestController) GetAll(c *gin.Context) {
 // @Success 422 {string} ValidationError
 // @Router /request [post]
 func (requestController RequestController) CreateNew(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"message": "Request POST"})
+	var requestModel = new(model.Request)
+	if err := c.ShouldBindJSON(&requestModel); err != nil {
+		log.Error(err)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status":  http.StatusBadRequest,
+			"message": "Something went wrong",
+			"error":   err.Error(),
+		})
+		c.Abort()
+		return
+	}
+	requestModel.Status = model.STATUS_PENDING
+
+	if err := requestModel.Save(); err != nil {
+		log.Error(err)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status":  http.StatusBadRequest,
+			"message": "Something went wrong",
+			"error":   err.Error(),
+		})
+		c.Abort()
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{
+		"status":  http.StatusCreated,
+		"message": "Request POST",
+		"data":    requestModel,
+	})
 }

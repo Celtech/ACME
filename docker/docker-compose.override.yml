@@ -7,8 +7,10 @@ services:
       dockerfile: "./docker/Dockerfile"
       context: ..
     depends_on:
-      - mariadb
-      - redis
+      mariadb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     ports:
       - "9022:9022"
       - "80:80"
@@ -33,6 +35,8 @@ services:
       MYSQL_DATABASE: 'acme_dev'
     healthcheck:
       test: mysqladmin ping --user=root --password=$$MYSQL_ROOT_PASSWORD --silent
+      interval: 10s
+      retries: 3
 
   redis:
     image: redis:6.2.6-alpine3.15
@@ -43,6 +47,8 @@ services:
       - acme-server
     healthcheck:
       test: [ "CMD", "redis-cli","ping" ]
+      interval: 10s
+      retries: 3
 
 volumes:
   acme-mariadb:

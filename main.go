@@ -4,7 +4,8 @@ import (
 	"baker-acme/config"
 	"baker-acme/internal/queue"
 	"baker-acme/web"
-	"baker-acme/web/service/database"
+	"baker-acme/web/database"
+	"baker-acme/web/database/migration"
 	ctx "context"
 	"os"
 	"os/signal"
@@ -26,6 +27,7 @@ func init() {
 	})
 
 	database.Init()
+	migration.RunMigrations()
 	queue.QueueMgr = queue.NewQueue(conf.GetString("redis.name"))
 }
 
