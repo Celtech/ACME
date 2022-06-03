@@ -2,6 +2,7 @@ version: "3.8"
 
 services:
   app:
+    container_name: rykelabs-acme-app
     build: 
       dockerfile: "./docker/Dockerfile"
       context: ..
@@ -16,8 +17,8 @@ services:
   mariadb:
     image: mariadb:10.3.17
     container_name: rykelabs-acme-mariadb
-    expose:
-      - "3306"
+    ports:
+      - "3306:3306"
     networks:
       - acme-server
     volumes:
@@ -31,10 +32,11 @@ services:
       MYSQL_PASSWORD: 'password'
       MYSQL_DATABASE: 'acme_dev'
     healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "--silent" ]
+      test: mysqladmin ping --user=root --password=$$MYSQL_ROOT_PASSWORD --silent
 
   redis:
     image: redis:6.2.6-alpine3.15
+    container_name: rykelabs-acme-redis
     expose:
       - "6379"
     networks:
