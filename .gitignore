@@ -1,4 +1,5 @@
 .vscode
+.idea
 .DS_Store
 
 *.exe
@@ -20,5 +21,7 @@ go.work
 out
 
 # OpenAPI
-docs/v3/.openapi-*
-docs/v3/README.md
+/docs/openapi
+/docs/swagger.json
+/docs/swagger.yaml
+/docs/docs.go

@@ -1,36 +1,30 @@
 package main
 
 import (
-	"baker-acme/internal/context"
+	"baker-acme/config"
 	"baker-acme/internal/queue"
 	"baker-acme/web"
-	con "context"
+	ctx "context"
 	"os"
 	"os/signal"
-	"strconv"
 	"syscall"
 	"time"
 
 	log "github.com/sirupsen/logrus"
+	"github.com/spf13/viper"
 )
 
-var appContext *context.AppContext
+var conf *viper.Viper
 
 func init() {
-	var colorLogOutput bool
-	if colorLogs := os.Getenv("BAKER_COLOR_LOGS"); len(colorLogs) == 0 {
-		colorLogOutput = true
-	} else {
-		colorLogOutput, _ = strconv.ParseBool(colorLogs)
-	}
+	conf = config.Init(os.Getenv("ACME_ENV"))
 
 	log.SetFormatter(&log.TextFormatter{
-		DisableColors: !colorLogOutput,
+		DisableColors: !conf.GetBool("services.logger.color"),
 		FullTimestamp: true,
 	})
 
-	appContext = context.NewAppContext(nil)
-	queue.QueueMgr = queue.NewQueue("certificate-request")
+	queue.QueueMgr = queue.NewQueue(conf.GetString("redis.name"))
 }
 
 // @title           ACME API
@@ -91,14 +85,14 @@ func main() {
 		}
 	}()
 
-	srv := web.StartServer(appContext)
+	srv := web.Serve(conf)
 	queue.QueueMgr.Subscribe()
 
 	<-finishUP
 	log.Info("attempting graceful shutdown")
 
 	// 1 second less than force shutdown time
-	ctx, cancel := con.WithTimeout(con.Background(), 29*time.Second)
+	ctx, cancel := ctx.WithTimeout(ctx.Background(), 29*time.Second)
 	defer cancel()
 	srv.Shutdown(ctx)
 

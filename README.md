@@ -22,7 +22,15 @@ responsibilities:
 
 ## Usage
 
-### Pre-requistes 
+### Modes
+
+Mode is controlled via the `ACME_ENV` environment variable. Possible values are:
+
+- development
+- production
+- testing
+
+### Pre-requistes
 
 - A valid top level domain name (`/etc/hosts` entries will not work for this)
 - A linux VM with docker installed on it and ports `80/tcp`, `443/tcp`, `9022/tcp` 
@@ -35,8 +43,8 @@ need linux based server that can properly expose ports to the outside world.
 
 Git clone this repsoitroy to your VM. Then run the following command:
 
-```
-$ docker stack deploy -c docker-compose.testing.yml playground
+```shell
+docker stack deploy -c docker-compose.testing.yml playground
 ```
 
 ### Configuration

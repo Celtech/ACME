@@ -1,19 +1,20 @@
 package web
 
 import (
-	"baker-acme/internal/context"
 	"baker-acme/web/middleware"
 	"fmt"
 	"net"
+	"os"
 
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
+	"github.com/spf13/viper"
 )
 
-func StartServer(appContext *context.AppContext) *http.Server {
-	if appContext.ConfigFactory.DebugMode {
+func Serve(conf *viper.Viper) *http.Server {
+	if os.Getenv("ACME_ENV") == "development" {
 		gin.SetMode(gin.DebugMode)
 	} else {
 		gin.SetMode(gin.ReleaseMode)
@@ -28,8 +29,8 @@ func StartServer(appContext *context.AppContext) *http.Server {
 	srv := &http.Server{
 		Addr: fmt.Sprintf(
 			"%s:%d",
-			appContext.ConfigFactory.Server.Host,
-			appContext.ConfigFactory.Server.Port,
+			conf.GetString("server.host"),
+			conf.GetInt("server.port"),
 		),
 		Handler: router,
 	}
@@ -37,8 +38,8 @@ func StartServer(appContext *context.AppContext) *http.Server {
 	go func() {
 		log.Infof(
 			"server starting, listening on %s:%d",
-			appContext.ConfigFactory.Server.Host,
-			appContext.ConfigFactory.Server.Port,
+			conf.GetString("server.host"),
+			conf.GetInt("server.port"),
 		)
 
 		if err := srv.ListenAndServe(); err != http.ErrServerClosed {

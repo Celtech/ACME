@@ -7,15 +7,11 @@ import (
 	"time"
 
 	"baker-acme/internal/queue"
+	"baker-acme/web/model"
 
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 )
-
-type CreateCertificateInput struct {
-	Domain        string `json:"domain" binding:"required"`
-	ChallengeType string `json:"challengeType" binding:"required"`
-}
 
 // @BasePath /api/v1
 
@@ -26,10 +22,11 @@ type CreateCertificateInput struct {
 // @Tags example
 // @Accept json
 // @Produce json
+// @Param request body model.Request true "Add request"
 // @Success 200 {string} Helloworld
 // @Router /example/helloworld [get]
 func RequestCertificate(c *gin.Context) {
-	var input CreateCertificateInput
+	var input model.Request
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -56,7 +53,7 @@ func RequestCertificate(c *gin.Context) {
 // @Tags idk
 // @Accept json
 // @Produce json
-// @Param	account	body	int  true	"Add account"
+// @Param request body model.Request true "Add request"
 // @Success 200 {string} string	"ok"
 // @Router /certificate/request [post]
 // x-codeSamples file

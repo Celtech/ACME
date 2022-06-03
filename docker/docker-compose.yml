@@ -12,9 +12,8 @@ services:
     networks:
         - baker-acme
     environment:
-      BAKER_DEBUG: "true"
+      ACME_ENV: "development"
       BAKER_ACME_PROVIDER_EMAIL: "tim@chargeover.com"
-      BAKER_COLOR_LOGS: "false"
       ACME_HOST: "https://acme-staging-v02.api.letsencrypt.org/directory"
     volumes:
       - data:/data

@@ -42,14 +42,17 @@ tasks:
   openapiv2:
     cmds:
       - cmd: swag init --md docs --codeExampleFiles docs/samples
+      - cmd: rm docs/docs.go
 
   openapiv3:
     cmds:
-      - cmd: docker run --rm -v $(PWD)/docs:/work $OAS3_GENERATOR_DOCKER_IMAGE generate -i /work/swagger.yaml -o /work/v3 -g openapi-yaml --minimal-update
-      - cmd: docker run --rm -v $(PWD)/docs/v3:/work $WORKER_IMAGE sh -c "rm -rf /work/.openapi-generator"
-      - cmd: docker run --rm -v $(PWD)/docs/v3:/work $WORKER_IMAGE sh -c "cp -f /work/.openapi-generator-ignore /work/openapi"
-      - cmd: docker run --rm -v $(PWD)/docs:/work $OAS3_GENERATOR_DOCKER_IMAGE generate -s -i /work/swagger.json -o /work/v3/openapi -g openapi --minimal-update
-      - cmd: docker run --rm -v $(PWD)/docs/v3:/work $WORKER_IMAGE sh -c "mv -f /work/openapi/openapi.json /work ; mv -f /work/openapi/openapi.yaml /work ; rm -rf /work/openapi"
+      - cmd: docker run --rm -v $(PWD)/docs:/work $OAS3_GENERATOR_DOCKER_IMAGE generate -i /work/swagger.yaml -o /work/openapi -g openapi-yaml --minimal-update
+      - cmd: docker run --rm -v $(PWD)/docs/openapi:/work $WORKER_IMAGE sh -c "rm -rf /work/.openapi-generator"
+      - cmd: docker run --rm -v $(PWD)/docs/openapi:/work $WORKER_IMAGE sh -c "cp -f /work/.openapi-generator-ignore /work/openapi"
+      - cmd: docker run --rm -v $(PWD)/docs:/work $OAS3_GENERATOR_DOCKER_IMAGE generate -s -i /work/swagger.json -o /work/openapi/openapi -g openapi --minimal-update
+      - cmd: docker run --rm -v $(PWD)/docs/openapi:/work $WORKER_IMAGE sh -c "mv -f /work/openapi/openapi.json /work ; mv -f /work/openapi/openapi.yaml /work ; rm -rf /work/openapi"
+      - cmd: rm docs/openapi/.openapi-generator-ignore
+      - cmd: rm docs/openapi/README.md
     env:
       OAS3_GENERATOR_DOCKER_IMAGE: openapitools/openapi-generator-cli:latest-release
       WORKER_IMAGE: golang:1.15-alpine3.13
