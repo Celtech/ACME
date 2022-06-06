@@ -56,13 +56,39 @@ func Serve(conf *viper.Viper) *http.Server {
 func errorHandler(router *gin.Engine) {
 	router.Use(middleware.ErrorHandler(
 		middleware.Map(gorm.ErrRecordNotFound).
-			ToStatusCode(http.StatusNotFound).
 			ToResponse(func(c *gin.Context, err error) {
 				c.Status(http.StatusNotFound)
 				c.JSON(http.StatusNotFound, gin.H{
 					"status":  http.StatusNotFound,
-					"message": "Entity not found",
-					"error":   fmt.Sprintf("The requested entity %s could not be found", c.Param("id")),
+					"error":   "entity not found",
+					"message": fmt.Sprintf("The requested entity %s could not be found", c.Param("id")),
+				})
+			}),
+		middleware.Map(middleware.ErrorInvalidLogin).
+			ToResponse(func(c *gin.Context, err error) {
+				c.Status(http.StatusUnauthorized)
+				c.JSON(http.StatusUnauthorized, gin.H{
+					"status":  http.StatusUnauthorized,
+					"error":   middleware.ErrorInvalidLogin.Error(),
+					"message": "Invalid credentials",
+				})
+			}),
+		middleware.Map(middleware.ErrorUnauthorized).
+			ToResponse(func(c *gin.Context, err error) {
+				c.Status(http.StatusUnauthorized)
+				c.JSON(http.StatusUnauthorized, gin.H{
+					"status":  http.StatusUnauthorized,
+					"error":   middleware.ErrorUnauthorized.Error(),
+					"message": "a valid JWT token is missing from this request",
+				})
+			}),
+		middleware.Map(middleware.ErrorInvalidJWTToken).
+			ToResponse(func(c *gin.Context, err error) {
+				c.Status(http.StatusUnauthorized)
+				c.JSON(http.StatusUnauthorized, gin.H{
+					"status":  http.StatusUnauthorized,
+					"error":   middleware.ErrorInvalidJWTToken.Error(),
+					"message": "Authentication Error",
 				})
 			}),
 	))

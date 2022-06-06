@@ -6,5 +6,8 @@ import (
 )
 
 func RunMigrations() {
-	database.GetDB().AutoMigrate(&model.Request{})
+	database.GetDB().AutoMigrate(
+		&model.Request{},
+		&model.User{},
+	)
 }

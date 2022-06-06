@@ -3,6 +3,7 @@ package web
 import (
 	"baker-acme/web/controller"
 	v1 "baker-acme/web/controller/api/v1"
+	"baker-acme/web/middleware"
 
 	"github.com/gin-gonic/gin"
 )
@@ -22,9 +23,16 @@ func rootRouter(router *gin.Engine) {
 func apiV1Router(router *gin.Engine) {
 	v1Group := router.Group("/api/v1")
 	{
+		authGroup := v1Group.Group("authentication")
+		{
+			authController := new(v1.AuthenticationController)
+			authGroup.POST("/", authController.Authenticate)
+		}
+
 		requestGroup := v1Group.Group("request")
 		{
 			requestController := new(v1.RequestController)
+			requestGroup.Use(middleware.AuthorizeJWT())
 			requestGroup.GET("/", requestController.GetAll)
 			requestGroup.GET("/:id", requestController.GetOne)
 			requestGroup.POST("/", requestController.CreateNew)

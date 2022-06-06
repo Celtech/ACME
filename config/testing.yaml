@@ -1,5 +1,5 @@
 # secret used for encryption, do not change once set
-secret: abcd1234
+# secret: abcd1234
 
 # controls where the web server listens, note host is used for ACME as well
 server:

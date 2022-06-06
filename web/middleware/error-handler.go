@@ -1,9 +1,16 @@
 package middleware
 
 import (
-	"reflect"
+	"errors"
 
 	"github.com/gin-gonic/gin"
+)
+
+var (
+	// Authentication
+	ErrorUnauthorized    = errors.New("you must be authorized to access this resource")
+	ErrorInvalidLogin    = errors.New("the supplied authentication credentials are incorrect")
+	ErrorInvalidJWTToken = errors.New("the supplied JWT token was expired or not a valid JWT token")
 )
 
 // ErrorHandler is middleware that enables you to configure error handling from a centralised place via its fluent API.
@@ -20,16 +27,11 @@ func ErrorHandler(errMap ...*errorMapping) gin.HandlerFunc {
 			for _, e2 := range e.fromErrors {
 				if lastErr.Err == e2 {
 					e.toResponse(context, lastErr.Err)
-				} else if isType(lastErr.Err, e2) {
-					e.toResponse(context, lastErr.Err)
+					return
 				}
 			}
 		}
 	}
-}
-
-func isType(a, b interface{}) bool {
-	return reflect.TypeOf(a) == reflect.TypeOf(b)
 }
 
 type errorMapping struct {

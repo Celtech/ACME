@@ -12,9 +12,9 @@ const (
 )
 
 type Request struct {
-	Id            int    `json:"id" gorm:"primary_key;auto_increment;not_null"`
-	Domain        string `json:"domain" binding:"required" gorm:"not_null"`
-	ChallengeType string `json:"challengeType" binding:"required" gorm:"not_null"`
+	Id            int    `json:"id" gorm:"primary_key;auto_increment;not null"`
+	Domain        string `json:"domain" binding:"required" gorm:"not null"`
+	ChallengeType string `json:"challengeType" binding:"required" gorm:"not null"`
 	Status        string `json:"status" gorm:"not_null"`
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
