@@ -36,18 +36,13 @@ func (requestController RequestController) GetOne(c *gin.Context) {
 	}
 
 	if err := requestModel.GetByID(c.Param("id")); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"status":  http.StatusNotFound,
-			"message": "Something went wrong",
-			"error":   "The requested entity could not be found",
-		})
-		c.Abort()
+		c.Error(err)
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
 		"status":  http.StatusOK,
-		"message": "Request GET ONE",
+		"message": "Found",
 		"data":    requestModel,
 	})
 }

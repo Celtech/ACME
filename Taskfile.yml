@@ -57,3 +57,7 @@ tasks:
       OAS3_GENERATOR_DOCKER_IMAGE: openapitools/openapi-generator-cli:latest-release
       WORKER_IMAGE: golang:1.15-alpine3.13
     silent: false
+
+  test:
+    cmds:
+      - go test -race $(go list ./... | grep -v /vendor/)

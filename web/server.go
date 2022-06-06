@@ -11,6 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
+	"gorm.io/gorm"
 )
 
 func Serve(conf *viper.Viper) *http.Server {
@@ -23,7 +24,7 @@ func Serve(conf *viper.Viper) *http.Server {
 	router := gin.New()
 	router.Use(gin.Recovery())
 	router.Use(middleware.LoggingMiddleware)
-
+	errorHandler(router)
 	configRoutes(router)
 
 	srv := &http.Server{
@@ -50,4 +51,20 @@ func Serve(conf *viper.Viper) *http.Server {
 	}()
 
 	return srv
+}
+
+func errorHandler(router *gin.Engine) {
+	router.Use(middleware.ErrorHandler(
+		middleware.Map(gorm.ErrRecordNotFound).
+			ToStatusCode(http.StatusNotFound).
+			ToResponse(func(c *gin.Context, err error) {
+				c.Status(http.StatusNotFound)
+				c.JSON(http.StatusNotFound, gin.H{
+					"status":  http.StatusNotFound,
+					"message": "Entity not found",
+					"error":   fmt.Sprintf("The requested entity %s could not be found", c.Param("id")),
+				})
+			}),
+	))
+
 }
