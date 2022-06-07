@@ -4,16 +4,23 @@ go 1.17
 
 require (
 	github.com/cenkalti/backoff/v4 v4.1.1
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-gonic/gin v1.7.7
 	github.com/go-acme/lego/v4 v4.6.0
+	github.com/go-playground/locales v0.14.0
+	github.com/go-playground/universal-translator v0.18.0
+	github.com/go-playground/validator/v10 v10.11.0
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/miekg/dns v1.1.43
 	github.com/sirupsen/logrus v1.8.1
+	github.com/spf13/cobra v1.4.0
 	github.com/spf13/viper v1.12.0
 	github.com/stretchr/testify v1.7.1
 	golang.org/x/crypto v0.0.0-20220525230936-793ad666bf5e
 	golang.org/x/net v0.0.0-20220524220425-1d687d428aca
 	gopkg.in/square/go-jose.v2 v2.6.0
+	gorm.io/driver/mysql v1.3.4
+	gorm.io/gorm v1.23.5
 )
 
 require (
@@ -39,7 +46,6 @@ require (
 	github.com/cpu/goacmedns v0.1.1 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/deepmap/oapi-codegen v1.6.1 // indirect
-	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/dimchansky/utfbom v1.1.1 // indirect
 	github.com/dnsimple/dnsimple-go v0.70.1 // indirect
@@ -49,9 +55,6 @@ require (
 	github.com/fsnotify/fsnotify v1.5.4 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-errors/errors v1.0.1 // indirect
-	github.com/go-playground/locales v0.14.0 // indirect
-	github.com/go-playground/universal-translator v0.18.0 // indirect
-	github.com/go-playground/validator/v10 v10.11.0 // indirect
 	github.com/go-resty/resty/v2 v2.1.1-0.20191201195748-d7b97669fe48 // indirect
 	github.com/go-sql-driver/mysql v1.6.0 // indirect
 	github.com/gofrs/uuid v3.2.0+incompatible // indirect
@@ -111,7 +114,6 @@ require (
 	github.com/softlayer/xmlrpc v0.0.0-20200409220501-5f089df7cb7e // indirect
 	github.com/spf13/afero v1.8.2 // indirect
 	github.com/spf13/cast v1.5.0 // indirect
-	github.com/spf13/cobra v1.4.0 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/stretchr/objx v0.3.0 // indirect
@@ -137,6 +139,4 @@ require (
 	gopkg.in/ns1/ns1-go.v2 v2.6.2 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.0 // indirect
-	gorm.io/driver/mysql v1.3.4 // indirect
-	gorm.io/gorm v1.23.5 // indirect
 )
