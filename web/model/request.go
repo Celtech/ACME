@@ -25,9 +25,12 @@ type Request struct {
 	UpdatedAt     time.Time `example:"2022-06-06 12:03:10.0"`
 }
 
-func (h *Request) GetAll() ([]Request, error) {
+func (h *Request) GetAll(pagination Pagination) ([]Request, error) {
 	requests := []Request{}
-	res := database.GetDB().Find(&requests)
+
+	offset := (pagination.Page - 1) * pagination.Limit
+	queryBuider := database.GetDB().Limit(pagination.Limit).Offset(offset).Order(pagination.Sort)
+	res := queryBuider.Model(&Request{}).Find(&requests)
 
 	return requests, res.Error
 }

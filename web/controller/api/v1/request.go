@@ -53,12 +53,17 @@ func (requestController RequestController) GetOne(c *gin.Context) {
 // @Description Fetch all certificate requests
 // @Tags Request
 // @Accept json
+// @Param limit query int false "Number of results per page"
+// @Param page query int false "Which page of results to fetch"
+// @Param sort query string false "Order of which results appear" Enums(asc, desc)
 // @Produce json
 // @Success 200 {array} model.Request
+// @Failure 401 {object} middleware.ErrorResponse
 // @Router /request [get]
 func (requestController RequestController) GetAll(c *gin.Context) {
-	var requestModel = new(model.Request)
-	res, _ := requestModel.GetAll()
+	pagination := model.GeneratePaginationFromRequest(c)
+	requestModel := new(model.Request)
+	res, _ := requestModel.GetAll(pagination)
 
 	c.JSON(http.StatusOK, gin.H{
 		"status":  http.StatusOK,
