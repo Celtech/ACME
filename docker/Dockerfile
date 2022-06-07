@@ -29,6 +29,7 @@ COPY --chown=haproxy:haproxy --chmod=755 --from=base /baker-acme /app/baker-acme
 COPY --chown=haproxy:haproxy --chmod=755 --from=base /app/config /app/config
 COPY --chown=haproxy:haproxy --chmod=755 --from=openapi /app/docs/openapi/openapi/openapi.json /app/docs/swagger.json
 COPY --chown=haproxy:haproxy --chmod=755 --from=openapi /app/docs/openapi/openapi/openapi.yaml /app/docs/swagger.yaml
+RUN ln -s /app/baker-acme /usr/bin/baker-acme
 USER haproxy
 EXPOSE 9022
 CMD ["/app/baker-acme", "start"]

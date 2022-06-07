@@ -23,7 +23,7 @@ func Serve(conf *viper.Viper) *http.Server {
 	router := gin.New()
 	router.Use(gin.Recovery())
 	router.Use(middleware.LoggingMiddleware)
-	errorHandler(router)
+	router.Use(middleware.ErrorHandler())
 	configRoutes(router)
 
 	srv := &http.Server{
@@ -50,8 +50,4 @@ func Serve(conf *viper.Viper) *http.Server {
 	}()
 
 	return srv
-}
-
-func errorHandler(router *gin.Engine) {
-	router.Use(middleware.ErrorHandler())
 }

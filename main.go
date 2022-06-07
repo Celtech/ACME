@@ -3,13 +3,13 @@ package main
 import (
 	"baker-acme/cmd"
 	"baker-acme/config"
+	"baker-acme/internal/queue"
+	"baker-acme/web/database"
+	"baker-acme/web/database/migration"
 	"os"
 
 	log "github.com/sirupsen/logrus"
-	"github.com/spf13/viper"
 )
-
-var conf *viper.Viper
 
 func init() {
 	var appEnv string
@@ -17,12 +17,16 @@ func init() {
 		appEnv = "development"
 	}
 
-	conf = config.Init(appEnv)
+	conf := config.Init(appEnv)
 
 	log.SetFormatter(&log.TextFormatter{
 		DisableColors: !conf.GetBool("services.logger.color"),
 		FullTimestamp: true,
 	})
+
+	database.Init()
+	migration.RunMigrations()
+	queue.QueueMgr = queue.NewQueue(conf.GetString("redis.name"))
 }
 
 // @title           ACME API

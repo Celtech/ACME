@@ -7,18 +7,12 @@ import (
 	"time"
 
 	"baker-acme/config"
-	"baker-acme/internal/queue"
 	"baker-acme/web"
-	"baker-acme/web/database"
-	"baker-acme/web/database/migration"
 	ctx "context"
 
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
-
-var conf *viper.Viper
 
 // startCmd represents the start command
 var startCmd = &cobra.Command{
@@ -26,8 +20,6 @@ var startCmd = &cobra.Command{
 	Short: "Start the web server",
 	Long:  "Start the web server",
 	Run: func(cmd *cobra.Command, args []string) {
-		__construct()
-
 		var returnCode = make(chan int)
 		var finishUP = make(chan struct{})
 		var done = make(chan struct{})
@@ -59,7 +51,7 @@ var startCmd = &cobra.Command{
 			}
 		}()
 
-		srv := web.Serve(conf)
+		srv := web.Serve(config.GetConfig())
 		//queue.QueueMgr.Subscribe()
 
 		<-finishUP
@@ -79,11 +71,4 @@ var startCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(startCmd)
-}
-
-func __construct() {
-	conf = config.GetConfig()
-	database.Init()
-	migration.RunMigrations()
-	queue.QueueMgr = queue.NewQueue(conf.GetString("redis.name"))
 }

@@ -25,7 +25,7 @@ func (controller AuthenticationController) Authenticate(c *gin.Context) {
 		return
 	}
 
-	token := service.JWTAuthService().GenerateToken(userModel.PublicKey, true)
+	token := service.JWTAuthService().GenerateToken(userModel.Email, true)
 	c.JSON(http.StatusCreated, gin.H{
 		"status":  http.StatusCreated,
 		"message": "use this JWT token as a bearer token to authenticate into the API",

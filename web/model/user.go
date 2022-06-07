@@ -9,20 +9,21 @@ import (
 )
 
 type User struct {
-	Id         int    `json:"id" gorm:"primary_key;auto_increment;not null"`
-	PublicKey  string `json:"public" binding:"required" gorm:"size:100;not null;unique"`
-	PrivateKey string `json:"private" binding:"required" gorm:"size:100;not null"`
-	CreatedAt  time.Time
-	UpdatedAt  time.Time
-	DeletedAt  gorm.DeletedAt
+	Id        int    `json:"id" gorm:"primary_key;auto_increment;not null"`
+	Email     string `json:"email" binding:"required" gorm:"size:100;not null;unique"`
+	Password  string `json:"password" binding:"required" gorm:"size:100;not null"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt gorm.DeletedAt
 }
 
 func (u *User) BeforeSave(tx *gorm.DB) error {
-	hashedPassword, err := Hash(u.PrivateKey)
+	hashedPassword, err := Hash(u.Password)
 	if err != nil {
 		return err
 	}
-	u.PrivateKey = string(hashedPassword)
+	u.Password = string(hashedPassword)
+
 	return nil
 }
 
@@ -31,13 +32,13 @@ func Hash(password string) ([]byte, error) {
 }
 
 func (u *User) VerifyPassword(password string) error {
-	return bcrypt.CompareHashAndPassword([]byte(u.PrivateKey), []byte(password))
+	return bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password))
 }
 
 func (u *User) Authenticate() bool {
-	var tempPass = u.PrivateKey
+	var tempPass = u.Password
 
-	res := database.GetDB().First(u, "public_key = ?", u.PublicKey)
+	res := database.GetDB().First(u, "email = ?", u.Email)
 	if res.Error != nil {
 		return false
 	}
