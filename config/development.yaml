@@ -1,6 +1,12 @@
 # secret used for encryption, do not change once set
 secret: abcd1234
 
+# default admin user credentials
+admin:
+  user: admin
+  # generated with `go run . hash YOUR_PLAINTEXT_PASSWORD`, default `password123`
+  passwordHash: $2a$10$VTNFh8EG5e4K5GThed0aQOLkYMQRSVs/EwVelD0QraYAXtbxIiJy.
+
 # controls where the web server listens, note host is used for ACME as well
 server:
   host: 0.0.0.0
