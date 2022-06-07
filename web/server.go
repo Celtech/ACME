@@ -11,7 +11,6 @@ import (
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
-	"gorm.io/gorm"
 )
 
 func Serve(conf *viper.Viper) *http.Server {
@@ -54,43 +53,5 @@ func Serve(conf *viper.Viper) *http.Server {
 }
 
 func errorHandler(router *gin.Engine) {
-	router.Use(middleware.ErrorHandler(
-		middleware.Map(gorm.ErrRecordNotFound).
-			ToResponse(func(c *gin.Context, err error) {
-				c.Status(http.StatusNotFound)
-				c.JSON(http.StatusNotFound, gin.H{
-					"status":  http.StatusNotFound,
-					"error":   "entity not found",
-					"message": fmt.Sprintf("The requested entity %s could not be found", c.Param("id")),
-				})
-			}),
-		middleware.Map(middleware.ErrorInvalidLogin).
-			ToResponse(func(c *gin.Context, err error) {
-				c.Status(http.StatusUnauthorized)
-				c.JSON(http.StatusUnauthorized, gin.H{
-					"status":  http.StatusUnauthorized,
-					"error":   middleware.ErrorInvalidLogin.Error(),
-					"message": "Invalid credentials",
-				})
-			}),
-		middleware.Map(middleware.ErrorUnauthorized).
-			ToResponse(func(c *gin.Context, err error) {
-				c.Status(http.StatusUnauthorized)
-				c.JSON(http.StatusUnauthorized, gin.H{
-					"status":  http.StatusUnauthorized,
-					"error":   middleware.ErrorUnauthorized.Error(),
-					"message": "a valid JWT token is missing from this request",
-				})
-			}),
-		middleware.Map(middleware.ErrorInvalidJWTToken).
-			ToResponse(func(c *gin.Context, err error) {
-				c.Status(http.StatusUnauthorized)
-				c.JSON(http.StatusUnauthorized, gin.H{
-					"status":  http.StatusUnauthorized,
-					"error":   middleware.ErrorInvalidJWTToken.Error(),
-					"message": "Authentication Error",
-				})
-			}),
-	))
-
+	router.Use(middleware.ErrorHandler())
 }

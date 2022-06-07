@@ -55,7 +55,7 @@ func init() {
 // @securityDefinitions.apikey  ApiKeyAuth
 // @in                          header
 // @name                        Authorization
-// @description					Description for what is this security definition being used
+// @description					JWT Authorization Token
 
 func main() {
 	var returnCode = make(chan int)
