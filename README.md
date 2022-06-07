@@ -4,14 +4,14 @@ Thin LetsEncrypt ACME client, challenge server, and management API written in go
 
 ## Why?
 
-Working with SSL inside of Docker swarm, with HAProxy, powering it can be a complex 
-thing. If you add a ton of domains, and dynamic custom domains into the mix, it 
+Working with SSL inside of Docker swarm, with HAProxy, powering it can be a complex
+thing. If you add a ton of domains, and dynamic custom domains into the mix, it
 seems almost impossible. Current solutions rely on bash scripts and really have
-no good way of handling dynamic domains. To solve this, we've created our own ACME 
-client which will be used inside a docker container. This client has 3 
+no good way of handling dynamic domains. To solve this, we've created our own ACME
+client which will be used inside a docker container. This client has 3
 responsibilities:
 
-- Exposing a API that can be hit to issue a new certificate for a domain pointed at 
+- Exposing a API that can be hit to issue a new certificate for a domain pointed at
   our ingress servers
 - Creating a temporary challenge server per certificate request to validate the domain
 - Managing LetsEncrypt user accounts as to not get rate limited
@@ -22,6 +22,41 @@ responsibilities:
 
 ## Usage
 
+### Pre-requistes
+
+- A valid top level domain name (`/etc/hosts` entries will not work for this)
+- A linux VM with docker installed on it and ports `80/tcp`, `443/tcp`, `9022/tcp`
+  exposed to the outside world
+
+This project will not be something you can run locally on Docker for Mac for a true
+end to end test, you will need linux based server that can properly expose ports to
+the outside world.
+
+### Quick start
+
+1. [Install Taskfile if you haven't already](https://taskfile.dev/installation/)
+2. Git clone this repsoitroy to your VM:
+3. Start the stack
+
+```shell
+$ git clone https://git.rykelabs.com/rykelabs/acme-server.git
+$ task docker:start
+```
+
+### Configuration
+
+Most of the configuration is handled through yaml files in the config folder.
+By default we include 3 config files:
+
+- testing.yaml
+- development.yaml
+- production.yaml
+
+Each of these config files correlate to the mode. This allows you to add more
+config files than the defaults included, just ensure you set the mode to the
+name you gave the file. All files other than `production.yaml` will start the
+server in debug mode with additional logging.
+
 ### Modes
 
 Mode is controlled via the `ACME_ENV` environment variable. Possible values are:
@@ -29,33 +64,26 @@ Mode is controlled via the `ACME_ENV` environment variable. Possible values are:
 - development
 - production
 - testing
+- your-custom-modes-here
 
-### Pre-requistes
+### The CLI
 
-- A valid top level domain name (`/etc/hosts` entries will not work for this)
-- A linux VM with docker installed on it and ports `80/tcp`, `443/tcp`, `9022/tcp` 
-  exposed to the outside world
+```text
+$ go run . --help
+Thin Let's Encrypt ACME client and challenge server written in go.
 
-This project will not be something you can run locally on Docker for Mac, you will 
-need linux based server that can properly expose ports to the outside world.
+Usage:
+  acme [command]
 
-### Quick start
+Available Commands:
+  completion  Generate the autocompletion script for the specified shell
+  hash        Returns a hashed version of a plaintext password
+  help        Help about any command
+  start       Start the web server
 
-Git clone this repsoitroy to your VM. Then run the following command:
+Flags:
+  -h, --help      help for acme
+  -v, --version   version for acme
 
-```shell
-docker stack deploy -c docker-compose.testing.yml playground
+Use "acme [command] --help" for more information about a command.
 ```
-
-### Configuration
-
-| ENV Variable                | Default                                        | Required | Description                                                                                                                                                                                     |
-|-----------------------------|------------------------------------------------|----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| ACCOUNT_EMAIL               | NULL                                           | Yes      | Email to associate with a LetsEncrypt account to issue certificates from                                                                                                                        |
-| DATA_PATH                   | /data                                          | No       | Base path to store our LetsEncrypt account data, and certificates, this will be created if it doesn't exist                                                                                     |
-| HTTP_CHALLENGE_HOST         | 0.0.0.0                                        | No       | The host that our HTTP Challenge server will listen on, for docker `0.0.0.0` is correct.                                                                                                        |
-| HTTP_CHALLENGE_PORT         | 80                                             | No       | The port our HTTP challenge server listens on, by default this is 80 and assumes you will use a reverse proxy                                                                                   |
-| HTTP_CHALLENGE_PROXY_HEADER | NULL                                           | No       | When using a reverse proxy, you need to have a header that contains the original host. In most cases this will be `X-Forwarded-Host`                                                            |
-| TLS_CHALLENGE_HOST          | 0.0.0.0                                        | No       | The host that our TLS Challenge server will listen on, for docker `0.0.0.0` is correct.                                                                                                         |
-| TLS_CHALLENGE_PORT          | 443                                            | No       | The port our TLS challenge server listens on, by default this is 443 and assumes you will use a reverse proxy                                                                                   |
-| ACME_HOST                   | https://acme-v02.api.letsencrypt.org/directory | No       | The ACME host that will issue certificates. The default is LetsEncrypt's ACME server and is subject to rate limiting. Use `https://acme-staging-v02.api.letsencrypt.org/directory` when testing |
