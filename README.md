@@ -39,8 +39,8 @@ the outside world.
 3. Start the stack
 
 ```shell
-$ git clone https://git.rykelabs.com/rykelabs/acme-server.git
-$ task docker:start
+git clone https://git.rykelabs.com/rykelabs/acme-server.git && \
+task docker:start
 ```
 
 ### Configuration
