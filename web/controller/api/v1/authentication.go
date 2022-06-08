@@ -11,6 +11,20 @@ import (
 
 type AuthenticationController struct{}
 
+// @BasePath /api/v1
+
+// @Summary Create JWT token
+// @Schemes
+// @Description Create JWT token from a users email and password.
+// @Description This token is used to authenticate to the rest of the API
+// @Tags Token
+// @Accept json
+// @Produce json
+// @Param request body model.User true "Token Request"
+// @Success 200 {object} model.UserResponse
+// @Failure 400 {object} middleware.ErrorResponse
+// @Failure 401 {object} middleware.ErrorResponse
+// @Router /token [post]
 func (controller AuthenticationController) Authenticate(c *gin.Context) {
 	var userModel = new(model.User)
 	if err := c.ShouldBindJSON(&userModel); err != nil {

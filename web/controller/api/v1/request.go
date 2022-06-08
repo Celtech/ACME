@@ -20,7 +20,7 @@ type RequestController struct{}
 // @Accept json
 // @Produce json
 // @Param id path int true "Certificate Request ID"
-// @Success 200 {object} model.Request
+// @Success 200 {object} model.APIEnvelopeResponse{data=model.Request}
 // @Failure 400 {object} middleware.ErrorResponse
 // @Failure 401 {object} middleware.ErrorResponse
 // @Failure 404 {object} middleware.ErrorResponse
@@ -57,7 +57,7 @@ func (requestController RequestController) GetOne(c *gin.Context) {
 // @Param page query int false "Which page of results to fetch"
 // @Param sort query string false "Order of which results appear" Enums(asc, desc)
 // @Produce json
-// @Success 200 {array} model.Request
+// @Success 200 {object} model.APIEnvelopeResponse{data=[]model.Request}
 // @Failure 401 {object} middleware.ErrorResponse
 // @Router /request [get]
 func (requestController RequestController) GetAll(c *gin.Context) {
@@ -81,7 +81,7 @@ func (requestController RequestController) GetAll(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param request body model.RequestCreate true "Certificate Request"
-// @Success 200 {object} model.Request
+// @Success 200 {object} model.APIEnvelopeResponse{data=model.Request}
 // @Failure 400 {object} middleware.ErrorResponse
 // @Failure 401 {object} middleware.ErrorResponse
 // @Router /request [post]

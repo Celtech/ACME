@@ -6,6 +6,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type APIEnvelopeResponse struct {
+	Status  int         `json:"status" example:"201"`
+	Message string      `json:"message" example:"use this JWT token as a bearer token to authenticate into the API"`
+	Data    interface{} `json:"data"`
+}
+
 type Pagination struct {
 	Limit int    `json:"limit"`
 	Page  int    `json:"page"`

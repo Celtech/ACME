@@ -23,7 +23,7 @@ func rootRouter(router *gin.Engine) {
 func apiV1Router(router *gin.Engine) {
 	v1Group := router.Group("/api/v1")
 	{
-		authGroup := v1Group.Group("authentication")
+		authGroup := v1Group.Group("token")
 		{
 			authController := new(v1.AuthenticationController)
 			authGroup.POST("/", authController.Authenticate)
