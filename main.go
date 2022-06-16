@@ -33,11 +33,6 @@ func init() {
 // @version         1.0
 // @description     Issue dynamic SSL certificates for 1+n domains.
 // @description.markdown
-// @termsOfService  https://chargeover.com/terms-of-service
-
-// @contact.name   API Support
-// @contact.url    https://git.rykelabs.com/rykelabs/acme-server/-/issues/new
-// @contact.email  tim@chargeover.com
 
 // @license.name  MIT
 // @license.url   https://git.rykelabs.com/rykelabs/acme-server/-/blob/main/LICENSE.md
