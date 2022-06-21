@@ -22,7 +22,7 @@ responsibilities:
 
 ## Usage
 
-### Pre-requistes
+### Pre-requisites
 
 - A valid top level domain name (`/etc/hosts` entries will not work for this)
 - A linux VM with docker installed on it and ports `80/tcp`, `443/tcp`, `9022/tcp`
@@ -82,3 +82,16 @@ Flags:
 
 Use "acme [command] --help" for more information about a command.
 ```
+
+## Attributions
+
+<img src="https://plugins.jetbrains.com/static/versions/22143/jetbrains-simple.svg" alt="drawing" width="100"/>
+<img src="https://go-acme.github.io/lego/images/logo-white.png" alt="Lego ACME Logo" width="200"/>
+
+This project was made possible by the wonderful developers over at [lego
+acme](https://github.com/go-acme/lego). Lego acme was used as the base
+ACME client with a few small tweaks to make it easily compatible with the web
+which power interfacing with Lets Encrypt.
+
+Also, a special thank you to [JetBrains](https://jetbrains.com) for providing 
+a free license to GoLand to support the development of this project.
