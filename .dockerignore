@@ -1,4 +1,36 @@
+# OpenAPI / Swagger
 /docs/openapi
 /docs/swagger.json
 /docs/swagger.yaml
 /docs/docs.go
+
+# Markdown
+*.md
+
+# Editors
+.vscode
+.idea
+.editorconfig
+
+# Docker
+Dockerfile
+Dockerfile*
+.dockerignore
+docker-compose*
+
+# Git / GitLab
+.git
+.gitlab
+.gitlab-ci.yml
+.gitignore
+
+# Environment
+.env
+.env.*
+
+# Operating Systems
+.DS_Store
+
+# Command Runners
+Taskfile.yml
+Makefile
