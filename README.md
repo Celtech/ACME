@@ -87,7 +87,7 @@ Use "acme [command] --help" for more information about a command.
 
 <p float="left">
 <img src="https://plugins.jetbrains.com/static/versions/22143/jetbrains-simple.svg" alt="drawing" width="100"/>
-<img src="https://go-acme.github.io/lego/images/logo-white.png" alt="Lego ACME Logo" width="200"/>
+<img src="https://github.com/go-acme/lego/raw/master/docs/static/images/lego-logo.min.svg" alt="Lego ACME Logo" width="200"/>
 </p>
 
 This project was made possible by the wonderful developers over at [lego
