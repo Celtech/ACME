@@ -1,9 +1,12 @@
 package v1
 
 import (
+	"baker-acme/internal/queue"
 	"baker-acme/web/middleware"
 	"baker-acme/web/model"
+	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
@@ -105,9 +108,29 @@ func (requestController RequestController) CreateNew(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{
-		"status":  http.StatusCreated,
-		"message": "Request POST",
-		"data":    requestModel,
-	})
+	evt := queue.QueueEvent{
+		Domain:        requestModel.Domain,
+		ChallengeType: requestModel.ChallengeType,
+		Type:          queue.EVENT_REQUEST,
+		Attempt:       0,
+		CreatedAt:     time.Now(),
+	}
+
+	if err := queue.QueueMgr.Publish(evt); err != nil {
+		log.Errorf("error publishing certificate request for domain %s to queue, %v", requestModel.Domain, err)
+
+		c.JSON(400, gin.H{
+			"message": fmt.Sprintf("error publishing certificate request for domain %s to queue", requestModel.Domain),
+			"error":   err.Error(),
+		})
+	} else {
+		c.JSON(http.StatusCreated, gin.H{
+			"status": http.StatusCreated,
+			"message": fmt.Sprintf(
+				"queued certificate request for %s",
+				requestModel.Domain,
+			),
+			"data": requestModel,
+		})
+	}
 }
