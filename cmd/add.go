@@ -11,8 +11,8 @@ import (
 // addCmd represents the add command
 var addCmd = &cobra.Command{
 	Use:   "add [username] [password]",
-	Short: "Adds a new API user",
-	Long:  "Adds a new API user",
+	Short: "Adds a new API authorized user to the database",
+	Long:  "Adds a new API authorized user to the database",
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 2 {
 			log.Error("username or password argument is missing")
