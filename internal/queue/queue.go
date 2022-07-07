@@ -24,11 +24,12 @@ const (
 )
 
 type QueueEvent struct {
-	Domain        string
-	ChallengeType string
-	Type          string
-	Attempt       int
-	CreatedAt     time.Time
+	RequestId     int       `json:"RequestId"`
+	Domain        string    `json:"Domain"`
+	ChallengeType string    `json:"ChallengeType"`
+	Type          string    `json:"Type"`
+	Attempt       int       `json:"Attempt"`
+	CreatedAt     time.Time `json:"CreatedAt"`
 }
 
 func NewQueue(queue string) *QueueManager {
