@@ -8,7 +8,7 @@ Working with SSL inside of Docker swarm, with HAProxy, powering it can be a comp
 thing. If you add a ton of domains, and dynamic custom domains into the mix, it
 seems almost impossible. Current solutions rely on bash scripts and really have
 no good way of handling dynamic domains. To solve this, we've created our own ACME
-client which will be used inside a docker container. This client has 3
+client which will be used inside a docker container. This client has 4
 responsibilities:
 
 - Exposing a API that can be hit to issue a new certificate for a domain pointed at
