@@ -61,6 +61,9 @@ Mode is controlled via the `ACME_ENV` environment variable. Possible values are:
 - testing
 - your-custom-modes-here
 
+Custom modes require a corresponding `.yaml` file. For example if you set `ACME_ENV` to `staging`, you would need the
+corresponding config file `config/staging.yaml`.
+
 ### The CLI
 
 ```text
@@ -71,6 +74,7 @@ Usage:
   acme [command]
 
 Available Commands:
+  add         Adds a new API authorized user to the database
   completion  Generate the autocompletion script for the specified shell
   hash        Returns a hashed version of a plaintext password
   help        Help about any command
