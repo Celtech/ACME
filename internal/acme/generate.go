@@ -1,6 +1,7 @@
 package acme
 
 import (
+	acmeConfig "baker-acme/config"
 	"fmt"
 	"os"
 	"time"
@@ -103,9 +104,19 @@ func register(client *lego.Client) (*registration.Resource, error) {
 }
 
 func newClient(acc registration.User, keyType crypto.KeyType) (*lego.Client, error) {
-	acmeHost := os.Getenv("ACME_HOST")
+	acmeHost := acmeConfig.GetConfig().GetString("acme.host")
 	if len(acmeHost) == 0 {
 		acmeHost = acmeServer
+	}
+
+	acmeUserAgent := acmeConfig.GetConfig().GetString("acme.userAgent")
+	if len(acmeUserAgent) == 0 {
+		acmeUserAgent = "lego-cli/chargeover"
+	}
+
+	clientTimeout := acmeConfig.GetConfig().GetInt("acme.clientTimeout")
+	if clientTimeout == 0 {
+		clientTimeout = 60
 	}
 
 	config := lego.NewConfig(acc)
@@ -113,10 +124,10 @@ func newClient(acc registration.User, keyType crypto.KeyType) (*lego.Client, err
 
 	config.Certificate = lego.CertificateConfig{
 		KeyType: keyType,
-		Timeout: time.Duration(30) * time.Second,
+		Timeout: time.Duration(clientTimeout) * time.Second,
 	}
-	config.UserAgent = "lego-cli/chargeover"
-	config.HTTPClient.Timeout = time.Duration(30) * time.Second
+	config.UserAgent = acmeUserAgent
+	config.HTTPClient.Timeout = time.Duration(clientTimeout) * time.Second
 
 	client, err := lego.NewClient(config)
 	if err != nil {

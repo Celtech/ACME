@@ -21,6 +21,7 @@ acme:
   host: https://acme-v02.api.letsencrypt.org/directory
   dataPath: /data
   userAgent: lego-cli/chargeover
+  clientTimeout: 60 # in seconds
   tls:
     host: 0.0.0.0
     port: 443
