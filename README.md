@@ -11,7 +11,7 @@ no good way of handling dynamic domains. To solve this, we've created our own AC
 client which will be used inside a docker container. This client has 4
 responsibilities:
 
-- Exposing a API that can be hit to issue a new certificate for a domain pointed at
+- Exposing an API that can be hit to issue a new certificate for a domain pointed at
   our ingress servers
 - Creating a temporary challenge server per certificate request to validate the domain
 - Managing LetsEncrypt user accounts as to not get rate limited
