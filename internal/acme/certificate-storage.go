@@ -1,6 +1,7 @@
 package acme
 
 import (
+	"baker-acme/config"
 	"bytes"
 	"crypto/x509"
 	"encoding/json"
@@ -47,7 +48,7 @@ type CertificatesStorage struct {
 
 // NewCertificatesStorage create a new certificates storage.
 func NewCertificatesStorage() *CertificatesStorage {
-	basePath := os.Getenv("DATA_PATH")
+	basePath := config.GetConfig().GetString("acme.dataPath")
 	if len(basePath) == 0 {
 		basePath = "/data"
 	}
