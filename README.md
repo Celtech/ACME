@@ -89,6 +89,14 @@ Flags:
 Use "acme [command] --help" for more information about a command.
 ```
 
+### The API
+
+When working with the API, you can use the build time generated openapi 2.0 specification 
+file. Once you start your server as detailed in [Quick start](#quick-start), you can visit
+[http://127.0.0.1:9022/openapi](http://127.0.0.1:9022/openapi) to view the openapi 2.0 
+specification file. This file can be used by tools such as [Postman](https://www.postman.com/)
+to work with the API.
+
 ## Attributions
 
 <p float="left">
