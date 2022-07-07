@@ -13,7 +13,9 @@ WORKDIR /app
 RUN addgroup --gid 99 --system haproxy && \
     adduser --disabled-password --home /var/lib/haproxy --ingroup haproxy --no-create-home --system --uid 99 haproxy && \
     mkdir /var/lib/haproxy && \
-    chown haproxy:haproxy /var/lib/haproxy
+    chown haproxy:haproxy /var/lib/haproxy && \
+    mkdir /data && \
+    chown -R haproxy:haproxy /data
 COPY --chown=haproxy:haproxy --chmod=755 --from=base /baker-acme /app/baker-acme
 COPY --chown=haproxy:haproxy --chmod=755 --from=base /app/config /app/config
 COPY --chown=haproxy:haproxy --chmod=755 --from=base /app/docs/swagger.json /app/docs/swagger.json
