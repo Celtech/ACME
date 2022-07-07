@@ -45,3 +45,9 @@ func (h *Request) Save() error {
 
 	return res.Error
 }
+
+func (h *Request) Update() error {
+	res := database.GetDB().Save(h)
+
+	return res.Error
+}
