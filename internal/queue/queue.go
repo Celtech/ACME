@@ -1,7 +1,9 @@
 package queue
 
 import (
+	"baker-acme/config"
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/go-redis/redis/v8"
@@ -31,7 +33,7 @@ type QueueEvent struct {
 
 func NewQueue(queue string) *QueueManager {
 	redisClient := redis.NewClient(&redis.Options{
-		Addr:     "redis:6379",
+		Addr:     fmt.Sprintf("%s:%s", config.GetConfig().GetString("redis.host"), config.GetConfig().GetString("redis.port")),
 		Password: "",
 		DB:       0,
 	})
