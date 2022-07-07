@@ -15,7 +15,7 @@ responsibilities:
   our ingress servers
 - Creating a temporary challenge server per certificate request to validate the domain
 - Managing LetsEncrypt user accounts as to not get rate limited
-- Managing our certifcate store and backing it up to S3
+- Managing our certificate store and backing it up to S3
   - Issuing new certificates for new domains against the challenge server
   - Automatically renewing certificates that will expire soon
   - Archiving old certificates
@@ -29,7 +29,7 @@ responsibilities:
   exposed to the outside world
 
 This project will not be something you can run locally on Docker for Mac for a true
-end to end test, you will need linux based server that can properly expose ports to
+end-to-end test, you will need linux based server that can properly expose ports to
 the outside world.
 
 ### Quick start
