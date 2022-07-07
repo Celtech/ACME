@@ -26,11 +26,15 @@ acme:
   host: https://acme-staging-v02.api.letsencrypt.org/directory
   dataPath: /data # path to where the certificates are stored
   tls:
+    host: 0.0.0.0
     port: 443
   http:
+    host: 0.0.0.0
     port: 80
+    proxyHeader:
   dns:
     provider: dnsmadeeasy
+    timeout: 60 # in seconds
 
 services:
   logger:

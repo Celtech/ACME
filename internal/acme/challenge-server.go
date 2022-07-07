@@ -1,7 +1,7 @@
 package acme
 
 import (
-	"os"
+	"baker-acme/config"
 	"time"
 
 	"baker-acme/internal/acme/challenge"
@@ -39,18 +39,18 @@ func SetupChallenges(client *lego.Client, challengeType string) error {
 }
 
 func setupHTTPProvider() challenge.Provider {
-	httpHost := os.Getenv("HTTP_CHALLENGE_HOST")
+	httpHost := config.GetConfig().GetString("acme.http.host")
 	if len(httpHost) == 0 {
 		httpHost = "0.0.0.0"
 	}
 
-	httpPort := os.Getenv("HTTP_CHALLENGE_PORT")
+	httpPort := config.GetConfig().GetString("acme.http.port")
 	if len(httpPort) == 0 {
-		httpPort = "5001"
+		httpPort = "80"
 	}
 
 	srv := http01.NewProviderServer(httpHost, httpPort)
-	httpProxyHeader := os.Getenv("HTTP_CHALLENGE_PROXY_HEADER")
+	httpProxyHeader := config.GetConfig().GetString("acme.http.proxyHeader")
 	if len(httpProxyHeader) > 0 {
 		srv.SetProxyHeader(httpProxyHeader)
 		log.Infof("HTTP challenge server using proxy header %s", httpProxyHeader)
@@ -62,33 +62,38 @@ func setupHTTPProvider() challenge.Provider {
 }
 
 func setupTLSProvider() challenge.Provider {
-	tlsHost := os.Getenv("TLS_CHALLENGE_HOST")
+	tlsHost := config.GetConfig().GetString("acme.tls.host")
 	if len(tlsHost) == 0 {
 		tlsHost = "0.0.0.0"
 	}
 
-	tlsPort := os.Getenv("TLS_CHALLENGE_PORT")
+	tlsPort := config.GetConfig().GetString("acme.tls.port")
 	if len(tlsPort) == 0 {
-		tlsPort = "5002"
+		tlsPort = "443"
 	}
+
+	srv := tlsalpn01.NewProviderServer(tlsHost, tlsPort)
 
 	log.Infof("TLS challenge server listening on %s:%s", tlsHost, tlsPort)
 
-	return tlsalpn01.NewProviderServer(tlsHost, tlsPort)
+	return srv
 }
 
 func setupDNSProvider(client *lego.Client) error {
-	provider, err := dns.NewDNSChallengeProviderByName("dnsmadeeasy")
+	dnsProvider := config.GetConfig().GetString("acme.dns.provider")
+	if len(dnsProvider) == 0 {
+		dnsProvider = "dnsmadeeasy"
+	}
+
+	provider, err := dns.NewDNSChallengeProviderByName(dnsProvider)
 	if err != nil {
 		return err
 	}
 
 	return client.Challenge.SetDNS01Provider(provider,
-		// dns01.CondOption(len(servers) > 0,
-		// 	dns01.AddRecursiveNameservers(dns01.ParseNameservers(ctx.StringSlice("dns.resolvers")))),
 		dns01.CondOption(true,
 			dns01.DisableCompletePropagationRequirement()),
 		dns01.CondOption(true,
-			dns01.AddDNSTimeout(time.Duration(60)*time.Second)),
+			dns01.AddDNSTimeout(time.Duration(config.GetConfig().GetInt("acme.dns.timeout"))*time.Second)),
 	)
 }

@@ -9,7 +9,7 @@ database:
   port: 3306
   user: root
   pass: password
-  name: test_db
+  name: acme
 
 redis:
   host: 127.0.0.1
@@ -21,11 +21,15 @@ acme:
   host: https://acme-v02.api.letsencrypt.org/directory
   dataPath: /data
   tls:
+    host: 0.0.0.0
     port: 443
   http:
+    host: 0.0.0.0
     port: 80
+    proxyHeader:
   dns:
     provider: dnsmadeeasy
+    timeout: 60 # in seconds
 
 services:
   logger:
