@@ -63,8 +63,8 @@ Mode is controlled via the `ACME_ENV` environment variable. Possible values are:
 - testing
 - your-custom-modes-here
 
-Custom modes require a corresponding `.yaml` file. For example if you set `ACME_ENV` to `staging`, you would need the
-corresponding config file `config/staging.yaml`.
+Custom modes require a corresponding `.yaml` file. For example if you set `ACME_ENV` 
+to `staging`, you would need the corresponding config file `config/staging.yaml`.
 
 ### The CLI
 
@@ -91,10 +91,11 @@ Use "acme [command] --help" for more information about a command.
 
 ### The API
 
-When working with the API, you can use the build time generated openapi 2.0 specification 
-file. Once you start your server as detailed in [Quick start](#quick-start), you can visit
-[http://127.0.0.1:9022/openapi](http://127.0.0.1:9022/openapi) to view the openapi 2.0 
-specification file. This file can be used by tools such as [Postman](https://www.postman.com/)
+When working with the API, you can use the build time generated openapi 2.0 
+specification  file. Once you start your server as detailed in [Quick start
+](#quick-start), you can visit [http://127.0.0.1:9022/openapi](
+http://127.0.0.1:9022/openapi) to view the openapi 2.0 specification file. 
+This file can be used by tools such as [Postman](https://www.postman.com/)
 to work with the API.
 
 ## Attributions
@@ -109,5 +110,5 @@ acme](https://github.com/go-acme/lego). Lego acme was used as the base
 ACME client with a few small tweaks to make it easily compatible with the web
 which power interfacing with Lets Encrypt.
 
-Also, a special thank you to [JetBrains](https://jb.gg/OpenSourceSupport) for providing 
-a free license to GoLand to support the development of this project.
+Also, a special thank you to [JetBrains](https://jb.gg/OpenSourceSupport) for 
+providing a free license to GoLand to support the development of this project.
