@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"baker-acme/internal/queue"
 	"os"
 	"os/signal"
 	"syscall"
@@ -52,7 +53,7 @@ var startCmd = &cobra.Command{
 		}()
 
 		srv := web.Serve(config.GetConfig())
-		//queue.QueueMgr.Subscribe()
+		queue.QueueMgr.Subscribe()
 
 		<-finishUP
 		log.Info("attempting graceful shutdown")
