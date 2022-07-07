@@ -25,6 +25,7 @@ acme:
   email: support@chargeover.com
   host: https://acme-staging-v02.api.letsencrypt.org/directory
   dataPath: /data # path to where the certificates are stored
+  userAgent: lego-cli/chargeover
   tls:
     host: 0.0.0.0
     port: 443

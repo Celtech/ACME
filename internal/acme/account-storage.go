@@ -1,6 +1,7 @@
 package acme
 
 import (
+	acmeConfig "baker-acme/config"
 	"crypto"
 	"crypto/x509"
 	"encoding/json"
@@ -35,7 +36,7 @@ const (
 //
 // rootUserPath:
 //
-//     ./.lego/accounts/localhost_14000/hubert@hubert.com/
+//     ./.lego/accounts/localhost_14000/example@chargeover.com/
 //          │      │             │             └── userID ("email" option)
 //          │      │             └── CA server ("server" option)
 //          │      └── root accounts directory
@@ -43,7 +44,7 @@ const (
 //
 // keysPath:
 //
-//     ./.lego/accounts/localhost_14000/hubert@hubert.com/keys/
+//     ./.lego/accounts/localhost_14000/example@chargeover.com/keys/
 //          │      │             │             │           └── root keys directory
 //          │      │             │             └── userID ("email" option)
 //          │      │             └── CA server ("server" option)
@@ -52,7 +53,7 @@ const (
 //
 // accountFilePath:
 //
-//     ./.lego/accounts/localhost_14000/hubert@hubert.com/account.json
+//     ./.lego/accounts/localhost_14000/example@chargeover.com/account.json
 //          │      │             │             │             └── account file
 //          │      │             │             └── userID ("email" option)
 //          │      │             └── CA server ("server" option)
@@ -70,12 +71,12 @@ type AccountsStorage struct {
 // NewAccountsStorage Creates a new AccountsStorage.
 func NewAccountsStorage() (*AccountsStorage, error) {
 	// TODO: move to account struct? Currently MUST pass email.
-	email := os.Getenv("BAKER_ACME_PROVIDER_EMAIL")
+	email := acmeConfig.GetConfig().GetString("acme.email")
 	if len(email) == 0 {
-		return nil, errors.New("you must set the `BAKER_ACME_PROVIDER_EMAIL` environment variable")
+		return nil, errors.New("you must set the `acme.email` config key in your configuration file")
 	}
 
-	acmeHost := os.Getenv("ACME_HOST")
+	acmeHost := acmeConfig.GetConfig().GetString("acme.host")
 	if len(acmeHost) == 0 {
 		acmeHost = acmeServer
 	}
@@ -84,7 +85,7 @@ func NewAccountsStorage() (*AccountsStorage, error) {
 		return nil, err
 	}
 
-	basePath := os.Getenv("DATA_PATH")
+	basePath := acmeConfig.GetConfig().GetString("acme.dataPath")
 	if len(basePath) == 0 {
 		basePath = "/data"
 	}
@@ -238,15 +239,20 @@ func loadPrivateKey(file string) (crypto.PrivateKey, error) {
 }
 
 func tryRecoverRegistration(privateKey crypto.PrivateKey) (*registration.Resource, error) {
-	acmeHost := os.Getenv("ACME_HOST")
+	acmeHost := acmeConfig.GetConfig().GetString("acme.host")
 	if len(acmeHost) == 0 {
 		acmeHost = acmeServer
+	}
+
+	acmeUserAgent := acmeConfig.GetConfig().GetString("acme.userAgent")
+	if len(acmeUserAgent) == 0 {
+		acmeUserAgent = "lego-cli/chargeover"
 	}
 
 	// couldn't load account but got a key. Try to look the account up.
 	config := lego.NewConfig(&Account{key: privateKey})
 	config.CADirURL = acmeHost
-	config.UserAgent = "lego-cli/chargeover"
+	config.UserAgent = acmeUserAgent
 
 	client, err := lego.NewClient(config)
 	if err != nil {
