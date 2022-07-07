@@ -109,10 +109,11 @@ func (requestController RequestController) CreateNew(c *gin.Context) {
 	}
 
 	evt := queue.QueueEvent{
+		RequestId:     requestModel.Id,
 		Domain:        requestModel.Domain,
 		ChallengeType: requestModel.ChallengeType,
 		Type:          queue.EVENT_REQUEST,
-		Attempt:       0,
+		Attempt:       1,
 		CreatedAt:     time.Now(),
 	}
 
