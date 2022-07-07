@@ -85,6 +85,11 @@ func setupDNSProvider(client *lego.Client) error {
 		dnsProvider = "dnsmadeeasy"
 	}
 
+	dnsTimeout := config.GetConfig().GetInt("acme.dns.timeout")
+	if dnsTimeout == 0 {
+		dnsTimeout = 60
+	}
+
 	provider, err := dns.NewDNSChallengeProviderByName(dnsProvider)
 	if err != nil {
 		return err
@@ -94,6 +99,6 @@ func setupDNSProvider(client *lego.Client) error {
 		dns01.CondOption(true,
 			dns01.DisableCompletePropagationRequirement()),
 		dns01.CondOption(true,
-			dns01.AddDNSTimeout(time.Duration(config.GetConfig().GetInt("acme.dns.timeout"))*time.Second)),
+			dns01.AddDNSTimeout(time.Duration(dnsTimeout)*time.Second)),
 	)
 }
