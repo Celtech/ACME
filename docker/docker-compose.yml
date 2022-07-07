@@ -9,6 +9,8 @@ services:
       ACME_ENV: "development"
       BAKER_ACME_PROVIDER_EMAIL: "tim@chargeover.com"
       ACME_HOST: "https://acme-staging-v02.api.letsencrypt.org/directory"
+      DNSMADEEASY_HTTP_TIMEOUT: "60"
+      DNSMADEEASY_PROPAGATION_TIMEOUT: "60"
     volumes:
       - acme-data:/data
 
