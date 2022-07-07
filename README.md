@@ -28,6 +28,8 @@ responsibilities:
 - A linux VM with docker installed on it and ports `80/tcp`, `443/tcp`, `9022/tcp`
   exposed to the outside world
 
+**Note: These ports may be different if you adjusted the configuration**
+
 This project will not be something you can run locally on Docker for Mac for a true
 end-to-end test, you will need linux based server that can properly expose ports to
 the outside world.
