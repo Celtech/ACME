@@ -2,6 +2,7 @@ package queue
 
 import (
 	"encoding/json"
+	"github.com/Celtech/ACME/config"
 	"github.com/Celtech/ACME/internal/acme"
 	"github.com/Celtech/ACME/web/model"
 	"strconv"
@@ -52,7 +53,8 @@ func (q *QueueManager) extractEventFromQueue() (QueueEvent, error) {
 }
 
 func handleCertificateError(params QueueEvent, err error) {
-	if params.Attempt >= 3 {
+	rateLimit := config.GetConfig().GetInt("acme.retryLimit")
+	if params.Attempt >= rateLimit {
 		log.Errorf("error issuing certificate for %s on attempt %d. Max attempts reached, marking as failed.\r\n%v", params.Domain, params.Attempt, err)
 		updateRequest(params, model.STATUS_ERROR)
 	} else {
