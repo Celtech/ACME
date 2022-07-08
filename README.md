@@ -4,11 +4,11 @@
 
 Thin LetsEncrypt ACME client, challenge server, and management API written in go.
 
-[![Go Version](https://img.shields.io/static/v1?label=GO&message=1.17%2B&color=02add8&logo=go&style=flat)](https://go.dev/doc/go1.17)
-[![Go Reference](https://img.shields.io/static/v1?label=docs&message=reference&color=027d9c&logo=go&style=flat&logoColor=white)](https://pkg.go.dev/github.com/Celtech/ACME)
-[![Maintainability](https://api.codeclimate.com/v1/badges/a1cceefd5974884a643d/maintainability)](https://codeclimate.com/github/Celtech/ACME/maintainability?style=flat)
-[![Go Report](https://goreportcard.com/badge/github.com/Celtech/ACME?style=flat)](https://goreportcard.com/report/github.com/Celtech/ACME)
-[![License](https://img.shields.io/static/v1?label=license&message=MIT&color=green&style=flat)](LICENSE.md)
+[![Go Version](https://img.shields.io/static/v1?label=GO&message=1.17%2B&color=02add8&logo=go&style=flat-square)](https://go.dev/doc/go1.17)
+[![Go Reference](https://img.shields.io/static/v1?label=docs&message=reference&color=027d9c&logo=go&style=flat-square&logoColor=white)](https://pkg.go.dev/github.com/Celtech/ACME)
+[![Maintainability](https://img.shields.io/codeclimate/maintainability/Celtech/ACME?logo=code%20climate&style=flat-square)](https://codeclimate.com/github/Celtech/ACME/maintainability)
+[![Go Report](https://goreportcard.com/badge/github.com/Celtech/ACME?style=flat-square)](https://goreportcard.com/report/github.com/Celtech/ACME)
+[![License](https://img.shields.io/static/v1?label=license&message=MIT&color=green&style=flat-square)](LICENSE.md)
 
 </div>
 
