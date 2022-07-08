@@ -22,6 +22,7 @@ func init() {
 	log.SetFormatter(&log.TextFormatter{
 		DisableColors: !conf.GetBool("services.logger.color"),
 		FullTimestamp: true,
+		ForceColors:   conf.GetBool("services.logger.color"),
 	})
 
 	database.Init()
