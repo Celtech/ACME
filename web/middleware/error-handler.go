@@ -26,6 +26,7 @@ var (
 	ErrorBadPathParameter = errors.New("the supplied path parameter is invalid, did you supply a valid integer?")
 )
 
+// ErrorResponse is a struct used for openapi documentation generation
 type ErrorResponse struct {
 	Status  int      `json:"status"`
 	Errors  []string `json:"errors"`
@@ -80,6 +81,7 @@ func ErrorHandler() gin.HandlerFunc {
 	}
 }
 
+// ParseError is a function for extracting proper error messages from gin errors and other types
 func ParseError(errs ...error) []string {
 	var out []string
 	for _, err := range errs {

@@ -8,6 +8,7 @@ import (
 	"github.com/Celtech/ACME/web/service"
 )
 
+// AuthorizeJWT is a middleware for requiring authentication on protected routes
 func AuthorizeJWT() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		const BEARER_SCHEMA = "Bearer"

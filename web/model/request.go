@@ -11,11 +11,14 @@ const (
 	STATUS_ISSUED  = "issued"
 )
 
+// RequestCreate is a struct used only for openapi documentation generation
+// to show the input data for creating a certificate request
 type RequestCreate struct {
 	Domain        string `json:"domain" binding:"required" example:"mydomain.com"`
 	ChallengeType string `json:"challengeType" binding:"required" enums:"challenge-tls,challenge-http,challenge-dns"`
 }
 
+// Request is a database struct that is used to store certificate requests in the database
 type Request struct {
 	Id            int       `json:"id" gorm:"primary_key;auto_increment;not null" example:"1"`
 	Domain        string    `json:"domain" binding:"required" gorm:"not null" example:"mydomain.com"`
@@ -25,6 +28,8 @@ type Request struct {
 	UpdatedAt     time.Time `example:"2022-06-06 12:03:10.0"`
 }
 
+// GetAll is a method used for getting all certificate requests from the database
+// in a paginated array
 func (h *Request) GetAll(pagination Pagination) ([]Request, error) {
 	requests := []Request{}
 
@@ -35,17 +40,21 @@ func (h *Request) GetAll(pagination Pagination) ([]Request, error) {
 	return requests, res.Error
 }
 
+// GetByID is a method used to get one certificate request by its ID
 func (h *Request) GetByID(id string) error {
 	res := database.GetDB().First(h, id)
 	return res.Error
 }
 
+// Save is a method used to save a NEW certificate request to the database.
+// If you need to update one instead, use the Update method.
 func (h *Request) Save() error {
 	res := database.GetDB().Create(h)
 
 	return res.Error
 }
 
+// Update is a method used to save changes to an existing record to the database.
 func (h *Request) Update() error {
 	res := database.GetDB().Save(h)
 
