@@ -1,8 +1,8 @@
 package database
 
 import (
-	"baker-acme/config"
 	"fmt"
+	"github.com/Celtech/ACME/config"
 
 	log "github.com/sirupsen/logrus"
 	"gorm.io/driver/mysql"

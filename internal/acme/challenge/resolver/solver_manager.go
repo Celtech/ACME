@@ -7,13 +7,13 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/Celtech/ACME/internal/acme/challenge"
+	"github.com/Celtech/ACME/internal/acme/challenge/dns01"
+	"github.com/Celtech/ACME/internal/acme/challenge/http01"
+	"github.com/Celtech/ACME/internal/acme/challenge/tlsalpn01"
 	"github.com/cenkalti/backoff/v4"
 	"github.com/go-acme/lego/v4/acme"
 	"github.com/go-acme/lego/v4/acme/api"
-	"baker-acme/internal/acme/challenge"
-	"baker-acme/internal/acme/challenge/dns01"
-	"baker-acme/internal/acme/challenge/http01"
-	"baker-acme/internal/acme/challenge/tlsalpn01"
 	log "github.com/sirupsen/logrus"
 )
 

@@ -1,4 +1,4 @@
-module baker-acme
+module github.com/Celtech/ACME
 
 go 1.17
 

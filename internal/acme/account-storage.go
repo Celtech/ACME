@@ -1,21 +1,21 @@
 package acme
 
 import (
-	acmeConfig "baker-acme/config"
 	"crypto"
 	"crypto/x509"
 	"encoding/json"
 	"encoding/pem"
 	"errors"
 	"fmt"
+	acmeConfig "github.com/Celtech/ACME/config"
 	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
 
-	lego "baker-acme/internal/acme/client"
-	certcrypto "baker-acme/internal/acme/crypto"
-	"baker-acme/internal/acme/registration"
+	lego "github.com/Celtech/ACME/internal/acme/client"
+	certcrypto "github.com/Celtech/ACME/internal/acme/crypto"
+	"github.com/Celtech/ACME/internal/acme/registration"
 	log "github.com/sirupsen/logrus"
 )
 

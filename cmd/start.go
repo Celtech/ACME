@@ -1,15 +1,15 @@
 package cmd
 
 import (
-	"baker-acme/internal/queue"
+	"github.com/Celtech/ACME/internal/queue"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
-	"baker-acme/config"
-	"baker-acme/web"
 	ctx "context"
+	"github.com/Celtech/ACME/config"
+	"github.com/Celtech/ACME/web"
 
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"

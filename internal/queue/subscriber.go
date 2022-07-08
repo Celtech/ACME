@@ -1,9 +1,9 @@
 package queue
 
 import (
-	"baker-acme/internal/acme"
-	"baker-acme/web/model"
 	"encoding/json"
+	"github.com/Celtech/ACME/internal/acme"
+	"github.com/Celtech/ACME/web/model"
 	"strconv"
 	"time"
 

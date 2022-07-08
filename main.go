@@ -1,11 +1,11 @@
 package main
 
 import (
-	"baker-acme/cmd"
-	"baker-acme/config"
-	"baker-acme/internal/queue"
-	"baker-acme/web/database"
-	"baker-acme/web/database/migration"
+	"github.com/Celtech/ACME/cmd"
+	"github.com/Celtech/ACME/config"
+	"github.com/Celtech/ACME/internal/queue"
+	"github.com/Celtech/ACME/web/database"
+	"github.com/Celtech/ACME/web/database/migration"
 	"os"
 
 	log "github.com/sirupsen/logrus"

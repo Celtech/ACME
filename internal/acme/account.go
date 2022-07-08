@@ -3,8 +3,8 @@ package acme
 import (
 	"crypto"
 
-	certcrypto "baker-acme/internal/acme/crypto"
-	"baker-acme/internal/acme/registration"
+	certcrypto "github.com/Celtech/ACME/internal/acme/crypto"
+	"github.com/Celtech/ACME/internal/acme/registration"
 )
 
 const acctKeyType = certcrypto.EC256

@@ -1,10 +1,10 @@
 package v1
 
 import (
-	"baker-acme/internal/queue"
-	"baker-acme/web/middleware"
-	"baker-acme/web/model"
 	"fmt"
+	"github.com/Celtech/ACME/internal/queue"
+	"github.com/Celtech/ACME/web/middleware"
+	"github.com/Celtech/ACME/web/model"
 	"net/http"
 	"time"
 

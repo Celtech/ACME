@@ -4,8 +4,8 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/Celtech/ACME/internal/acme/challenge"
 	"github.com/go-acme/lego/v4/acme"
-	"baker-acme/internal/acme/challenge"
 	"github.com/stretchr/testify/require"
 )
 

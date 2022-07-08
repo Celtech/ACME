@@ -1,9 +1,9 @@
 package web
 
 import (
-	"baker-acme/web/controller"
-	v1 "baker-acme/web/controller/api/v1"
-	"baker-acme/web/middleware"
+	"github.com/Celtech/ACME/web/controller"
+	v1 "github.com/Celtech/ACME/web/controller/api/v1"
+	"github.com/Celtech/ACME/web/middleware"
 
 	"github.com/gin-gonic/gin"
 )

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"baker-acme/internal/acme/challenge"
+	"github.com/Celtech/ACME/internal/acme/challenge"
 
 	"github.com/go-acme/lego/v4/acme"
 	log "github.com/sirupsen/logrus"

@@ -1,19 +1,19 @@
 package acme
 
 import (
-	"baker-acme/config"
 	"bytes"
 	"crypto/x509"
 	"encoding/json"
 	"fmt"
+	"github.com/Celtech/ACME/config"
 	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
 
-	"baker-acme/internal/acme/certificate"
-	certcrypto "baker-acme/internal/acme/crypto"
+	"github.com/Celtech/ACME/internal/acme/certificate"
+	certcrypto "github.com/Celtech/ACME/internal/acme/crypto"
 
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/net/idna"

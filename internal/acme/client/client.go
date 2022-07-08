@@ -4,9 +4,9 @@ import (
 	"errors"
 	"net/url"
 
-	"baker-acme/internal/acme/certificate"
-	"baker-acme/internal/acme/registration"
-	"baker-acme/internal/acme/challenge/resolver"
+	"github.com/Celtech/ACME/internal/acme/certificate"
+	"github.com/Celtech/ACME/internal/acme/challenge/resolver"
+	"github.com/Celtech/ACME/internal/acme/registration"
 
 	"github.com/go-acme/lego/v4/acme/api"
 )

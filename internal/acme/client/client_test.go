@@ -6,7 +6,7 @@ import (
 	"crypto/rsa"
 	"testing"
 
-	"baker-acme/internal/acme/registration"
+	"github.com/Celtech/ACME/internal/acme/registration"
 
 	"github.com/go-acme/lego/v4/platform/tester"
 	"github.com/stretchr/testify/assert"

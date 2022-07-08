@@ -1,8 +1,8 @@
 package service
 
 import (
-	"baker-acme/config"
 	"fmt"
+	"github.com/Celtech/ACME/config"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"

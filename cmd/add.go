@@ -1,8 +1,8 @@
 package cmd
 
 import (
-	"baker-acme/web/database"
-	"baker-acme/web/model"
+	"github.com/Celtech/ACME/web/database"
+	"github.com/Celtech/ACME/web/model"
 
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"

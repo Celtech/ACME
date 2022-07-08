@@ -1,9 +1,9 @@
 package v1
 
 import (
-	"baker-acme/web/middleware"
-	"baker-acme/web/model"
-	"baker-acme/web/service"
+	"github.com/Celtech/ACME/web/middleware"
+	"github.com/Celtech/ACME/web/model"
+	"github.com/Celtech/ACME/web/service"
 	"net/http"
 
 	"github.com/gin-gonic/gin"

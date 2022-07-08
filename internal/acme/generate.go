@@ -1,15 +1,15 @@
 package acme
 
 import (
-	acmeConfig "baker-acme/config"
 	"fmt"
+	acmeConfig "github.com/Celtech/ACME/config"
 	"os"
 	"time"
 
-	"baker-acme/internal/acme/certificate"
-	lego "baker-acme/internal/acme/client"
-	"baker-acme/internal/acme/crypto"
-	"baker-acme/internal/acme/registration"
+	"github.com/Celtech/ACME/internal/acme/certificate"
+	lego "github.com/Celtech/ACME/internal/acme/client"
+	"github.com/Celtech/ACME/internal/acme/crypto"
+	"github.com/Celtech/ACME/internal/acme/registration"
 
 	log "github.com/sirupsen/logrus"
 )

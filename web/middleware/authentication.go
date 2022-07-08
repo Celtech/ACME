@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"baker-acme/web/service"
+	"github.com/Celtech/ACME/web/service"
 )
 
 func AuthorizeJWT() gin.HandlerFunc {

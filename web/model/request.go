@@ -1,7 +1,7 @@
 package model
 
 import (
-	"baker-acme/web/database"
+	"github.com/Celtech/ACME/web/database"
 	"time"
 )
 

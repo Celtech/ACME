@@ -1,7 +1,7 @@
 package service
 
 import (
-	"baker-acme/config"
+	"github.com/Celtech/ACME/config"
 	"testing"
 
 	"github.com/stretchr/testify/assert"

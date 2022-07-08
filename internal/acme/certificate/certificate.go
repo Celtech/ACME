@@ -12,9 +12,9 @@ import (
 	"strings"
 	"time"
 
-	certcrypto "baker-acme/internal/acme/crypto"
+	certcrypto "github.com/Celtech/ACME/internal/acme/crypto"
 
-	"baker-acme/internal/acme/challenge"
+	"github.com/Celtech/ACME/internal/acme/challenge"
 
 	"github.com/go-acme/lego/v4/acme"
 	"github.com/go-acme/lego/v4/acme/api"

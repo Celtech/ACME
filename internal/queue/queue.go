@@ -1,9 +1,9 @@
 package queue
 
 import (
-	"baker-acme/config"
 	"context"
 	"fmt"
+	"github.com/Celtech/ACME/config"
 	"time"
 
 	"github.com/go-redis/redis/v8"

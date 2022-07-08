@@ -1,18 +1,18 @@
 package acme
 
 import (
-	"baker-acme/config"
+	"github.com/Celtech/ACME/config"
 	"time"
 
-	"baker-acme/internal/acme/challenge"
-	"baker-acme/internal/acme/challenge/dns01"
-	"baker-acme/internal/acme/challenge/http01"
-	"baker-acme/internal/acme/challenge/tlsalpn01"
+	"github.com/Celtech/ACME/internal/acme/challenge"
+	"github.com/Celtech/ACME/internal/acme/challenge/dns01"
+	"github.com/Celtech/ACME/internal/acme/challenge/http01"
+	"github.com/Celtech/ACME/internal/acme/challenge/tlsalpn01"
 
 	"github.com/go-acme/lego/v4/providers/dns"
 	log "github.com/sirupsen/logrus"
 
-	lego "baker-acme/internal/acme/client"
+	lego "github.com/Celtech/ACME/internal/acme/client"
 )
 
 func SetupChallenges(client *lego.Client, challengeType string) error {
