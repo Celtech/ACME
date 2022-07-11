@@ -33,9 +33,12 @@ or not.`,
 			Email:    args[0],
 			Password: args[1],
 		}
-		database.GetDB().Create(&user)
-
-		log.Infof("User Added:\r\n\r\nEmail: %s\r\nPassword: %s", user.Email, user.Password)
+		res := database.GetDB().Create(&user)
+		if res.Error != nil {
+			log.Error(res.Error)
+		} else {
+			log.Infof("User Added:\r\n\r\nEmail: %s\r\nPassword: %s", user.Email, user.Password)
+		}
 	},
 }
 
