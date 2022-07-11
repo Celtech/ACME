@@ -18,6 +18,10 @@ tasks:
     cmds:
       - cmd: docker compose -p acme -f docker/docker-compose.yml -f docker/docker-compose.override.yml up --build --force-recreate
 
+  add:user:
+    cmds:
+      - cmd: docker exec -it rykelabs-acme-app sh -c "/app/baker-acme add {{.CLI_ARGS}}"
+
   docker:deploy:
     cmds:
       - cmd: docker buildx rm acme_builder # just in case task was exited early by the user
