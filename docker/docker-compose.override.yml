@@ -6,6 +6,7 @@ services:
     build:
       dockerfile: "./docker/Dockerfile"
       context: ..
+      target: $COMPOSE_TARGET
     depends_on:
       mariadb:
         condition: service_healthy
@@ -15,6 +16,9 @@ services:
       - "9022:9022"
       - "80:80"
       - "443:443"
+    working_dir: /app/code
+    volumes:
+      - ../:/app/code
 
   mariadb:
     image: mariadb:10.3.17
