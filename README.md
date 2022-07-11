@@ -50,7 +50,7 @@ the outside world.
 
 1. [Install Taskfile if you haven't already](https://taskfile.dev/installation/)
 2. Git clone this repsoitroy to your VM:
-3. Start the stack (`task docker:start`)
+3. Start the stack (`task docker:dev`)
 
 ### Configuration
 
