@@ -42,11 +42,16 @@ func getSecretKey() string {
 
 // GenerateToken returns a JWT token from an email password combo
 func (service *jwtServices) GenerateToken(email string, isUser bool) string {
+	tokenTTL := config.GetConfig().GetInt("services.jwt.tokenTTL")
+	if tokenTTL == 0 {
+		tokenTTL = 30
+	}
+
 	claims := &authCustomClaims{
 		email,
 		isUser,
 		jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Hour * 48).Unix(),
+			ExpiresAt: time.Now().Add(time.Minute * time.Duration(tokenTTL)).Unix(),
 			Issuer:    service.issure,
 			IssuedAt:  time.Now().Unix(),
 		},

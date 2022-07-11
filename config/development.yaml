@@ -45,3 +45,5 @@ acme:
 services:
   logger:
     color: true
+  jwt:
+    tokenTTL: 30 # How long a JWT token is valid for in minutes
