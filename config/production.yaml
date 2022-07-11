@@ -38,4 +38,5 @@ services:
   logger:
     color: false
   jwt:
+    issuer: RykeLabs
     tokenTTL: 30

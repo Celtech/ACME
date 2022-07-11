@@ -11,7 +11,7 @@ import (
 // JWTService is an interface around our JWT auth package
 type JWTService interface {
 	GenerateToken(email string, isUser bool) string
-	ValidateToken(token string) (*jwt.Token, error)
+	ValidateToken(token string) (bool, error)
 }
 
 type jwtServices struct {
@@ -23,7 +23,7 @@ type jwtServices struct {
 func JWTAuthService() JWTService {
 	return &jwtServices{
 		secretKey: getSecretKey(),
-		issure:    "RykeLabs",
+		issure:    getIssuer(),
 	}
 }
 
@@ -33,6 +33,14 @@ func getSecretKey() string {
 		secret = "correct-horse-battery-staple" // Just for you Keith :)
 	}
 	return secret
+}
+
+func getIssuer() string {
+	issuer := config.GetConfig().GetString("services.jwt.issuer")
+	if len(issuer) == 0 {
+		issuer = "RykeLabs"
+	}
+	return issuer
 }
 
 // GenerateToken returns a JWT token from an email password combo
@@ -59,12 +67,18 @@ func (service *jwtServices) GenerateToken(email string, isUser bool) string {
 }
 
 // ValidateToken verifies a JWT token authenticity
-func (service *jwtServices) ValidateToken(encodedToken string) (*jwt.Token, error) {
-	return jwt.Parse(encodedToken, func(token *jwt.Token) (interface{}, error) {
+func (service *jwtServices) ValidateToken(encodedToken string) (bool, error) {
+	token, err := jwt.Parse(encodedToken, func(token *jwt.Token) (interface{}, error) {
 		if _, isvalid := token.Method.(*jwt.SigningMethodHMAC); !isvalid {
 			return nil, fmt.Errorf("invalid token %v", token.Header["alg"])
 		}
 
 		return []byte(service.secretKey), nil
 	})
+
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid && claims["iss"] == getIssuer() {
+		return true, err
+	}
+
+	return false, err
 }

@@ -21,8 +21,8 @@ func AuthorizeJWT() gin.HandlerFunc {
 		}
 
 		tokenString := authHeader[len(BEARER_SCHEMA):]
-		token, err := service.JWTAuthService().ValidateToken(strings.Trim(tokenString, " "))
-		if err != nil || !token.Valid {
+		valid, err := service.JWTAuthService().ValidateToken(strings.Trim(tokenString, " "))
+		if err != nil || !valid {
 			c.Error(ErrorInvalidJWTToken)
 			c.Abort()
 

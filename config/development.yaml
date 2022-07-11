@@ -46,4 +46,5 @@ services:
   logger:
     color: true
   jwt:
+    issuer: RykeLabs
     tokenTTL: 30 # How long a JWT token is valid for in minutes
