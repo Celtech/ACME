@@ -70,7 +70,7 @@ type AccountsStorage struct {
 
 // NewAccountsStorage Creates a new AccountsStorage.
 func NewAccountsStorage() (*AccountsStorage, error) {
-	// TODO: move to account struct? Currently MUST pass email.
+	// TODO: extract from JWT token
 	email := acmeConfig.GetConfig().GetString("acme.email")
 	if len(email) == 0 {
 		return nil, errors.New("you must set the `acme.email` config key in your configuration file")
