@@ -3,17 +3,17 @@
 # Working directory
 # . or absolute path, please note that the directories following must be under root
 root = "/app/code"
-tmp_dir = "../tmp"
+tmp_dir = ".."
 
 [build]
 # Just plain old shell command. You could use `make` as well.
-cmd = "CGO_ENABLED=0 go build -ldflags='-s -w' -gcflags=all='-l -B' -o ../tmp/app/baker-acme"
+cmd = "CGO_ENABLED=0 go build -ldflags='-s -w' -gcflags=all='-l -B' -o ../baker-acme"
 # Binary file yields from `cmd`.
 bin = "tmp/app"
 
 # Customize binary.
 # This is how you start to run your application. Since my application will works like CLI, so to run it, like to make a CLI call.
-full_bin = "../tmp/app/baker-acme start"
+full_bin = "../baker-acme start"
 # This log file places in your tmp_dir.
 log = "air_errors.log"
 # Watch these filename extensions.
