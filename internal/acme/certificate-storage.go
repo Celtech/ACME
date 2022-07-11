@@ -1,6 +1,7 @@
 package acme
 
 import (
+	"bufio"
 	"bytes"
 	"crypto/x509"
 	"encoding/json"
@@ -173,9 +174,33 @@ func (s *CertificatesStorage) ReadCertificate(domain, extension string) ([]*x509
 	return certcrypto.ParsePEMBundle(content)
 }
 
+// CheckCrtList will check to see if the cert list file contains our given file or not. It will
+// return an (int greater than 0 if found) or (0 on an error or if it wasn't found)
+func (s *CertificatesStorage) CheckCrtList(certFileName string, crtList *os.File) (int, error) {
+	scanner := bufio.NewScanner(crtList)
+	line := 1
+
+	for scanner.Scan() {
+		if strings.Contains(scanner.Text(), certFileName) {
+			return line, nil
+		}
+
+		line++
+	}
+
+	if err := scanner.Err(); err != nil {
+		return 0, err
+	}
+
+	return 0, nil
+}
+
+// WriteCrtList will write a newly issued cert to the crt-list.txt file to be used by reverse proxies such as HAProxy
+// Note this will also check to see if the file already exists, if it does, it won't write anything to prevent
+// duplication
 func (s *CertificatesStorage) WriteCrtList(domain string) error {
 	filePath := filepath.Join(s.rootPath, "crt-list.txt")
-	crtList, err := os.OpenFile(filePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	crtList, err := os.OpenFile(filePath, os.O_APPEND|os.O_CREATE|os.O_RDWR, 0644)
 	if err != nil {
 		return err
 	}
@@ -183,9 +208,15 @@ func (s *CertificatesStorage) WriteCrtList(domain string) error {
 	defer crtList.Close()
 
 	var baseFileName = sanitizedDomain(domain)
-	_, writeErr := crtList.WriteString(filepath.Join(s.rootPath, baseFileName+".pem\n"))
+	var certFileName = filepath.Join(s.rootPath, baseFileName+".pem\n")
+	lineNo, err := s.CheckCrtList(certFileName, crtList)
 
-	return writeErr
+	if lineNo == 0 && err == nil {
+		_, writeErr := crtList.WriteString(certFileName)
+		return writeErr
+	}
+
+	return err
 }
 
 func (s *CertificatesStorage) WriteFile(domain, extension string, data []byte) error {
