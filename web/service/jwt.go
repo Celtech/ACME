@@ -13,11 +13,6 @@ type JWTService interface {
 	GenerateToken(email string, isUser bool) string
 	ValidateToken(token string) (*jwt.Token, error)
 }
-type authCustomClaims struct {
-	Name string `json:"name"`
-	User bool   `json:"user"`
-	jwt.StandardClaims
-}
 
 type jwtServices struct {
 	secretKey string
@@ -47,16 +42,13 @@ func (service *jwtServices) GenerateToken(email string, isUser bool) string {
 		tokenTTL = 30
 	}
 
-	claims := &authCustomClaims{
-		email,
-		isUser,
-		jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Minute * time.Duration(tokenTTL)).Unix(),
-			Issuer:    service.issure,
-			IssuedAt:  time.Now().Unix(),
-		},
-	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"exp":    time.Now().Add(time.Minute * time.Duration(tokenTTL)).Unix(),
+		"iss":    service.issure,
+		"iat":    time.Now().Unix(),
+		"email":  email,
+		"isUser": isUser,
+	})
 
 	//encoded string
 	t, err := token.SignedString([]byte(service.secretKey))
@@ -71,8 +63,8 @@ func (service *jwtServices) ValidateToken(encodedToken string) (*jwt.Token, erro
 	return jwt.Parse(encodedToken, func(token *jwt.Token) (interface{}, error) {
 		if _, isvalid := token.Method.(*jwt.SigningMethodHMAC); !isvalid {
 			return nil, fmt.Errorf("invalid token %v", token.Header["alg"])
-
 		}
+
 		return []byte(service.secretKey), nil
 	})
 }
