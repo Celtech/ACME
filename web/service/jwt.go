@@ -5,7 +5,7 @@ import (
 	"github.com/Celtech/ACME/config"
 	"time"
 
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt/v4"
 )
 
 // JWTService is an interface around our JWT auth package
