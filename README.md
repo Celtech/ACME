@@ -55,7 +55,7 @@ the outside world.
 ### Configuration
 
 Most of the configuration is handled through yaml files in the config folder.
-By default we include 3 config files:
+By default, we include 3 config files:
 
 - testing.yaml
 - development.yaml
