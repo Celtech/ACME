@@ -10,13 +10,13 @@ tasks:
     env:
         COMPOSE_TARGET: "dev"
     cmds:
-      - cmd: docker compose -p acme -f docker/docker-compose.yml -f docker/docker-compose.override.yml up --build --force-recreate
+      - cmd: docker compose -p acme -f docker/docker-compose.yml -f docker/docker-compose.dev.yml up --build --force-recreate
 
   docker:start:
     env:
         COMPOSE_TARGET: ""
     cmds:
-      - cmd: docker compose -p acme -f docker/docker-compose.yml -f docker/docker-compose.override.yml up --build --force-recreate
+      - cmd: docker compose -p acme -f docker/docker-compose.yml -f docker/docker-compose.dev.yml up --build --force-recreate
 
   add:user:
     cmds:

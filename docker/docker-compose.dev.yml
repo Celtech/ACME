@@ -14,8 +14,9 @@ services:
         condition: service_healthy
     ports:
       - "9022:9022"
-      - "80:80"
-      - "443:443"
+    expose:
+      - "80"
+      - "443"
     working_dir: /app/code
     volumes:
       - ../:/app/code
