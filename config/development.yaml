@@ -28,6 +28,12 @@ acme:
   userAgent: lego-cli/chargeover
   clientTimeout: 60 # client that talks to the remote ACME server e.g. LetsEncrypt. in seconds
   retryLimit: 5 # LetsEncrypt has a rate limit of 5 failures per account, per hostname, per hour
+  renewal:
+    days: 30 # Days before the certificate expiration to renew
+    reusePrivateKey: false # Indicates you want to reuse your current private key for the new certificate.
+    noRandomDelay: false # Do not add a random sleep before the renewal. We do not recommend leaving this as false to enable the delay
+    alwaysDeactivateAuthorizations: false # Force the authorizations to be relinquished even if the certificate request was successful
+    mustStaple: false # Include the OCSP must staple TLS extension in the CSR and generated certificate.
   tls:
     host: 0.0.0.0
     port: 443
