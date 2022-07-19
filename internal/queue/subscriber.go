@@ -20,7 +20,8 @@ func (q *QueueManager) Subscribe() {
 		if err != nil {
 			log.Error(err.Error())
 		} else {
-			log.Infof("Working on queue event for request id %d of type %s attempt %d",
+			log.Infof("Working on %s queue event for request id %d of type %s attempt %d",
+				evt.Type,
 				evt.RequestId,
 				evt.ChallengeType,
 				evt.Attempt,
@@ -50,6 +51,14 @@ func (q *QueueManager) extractEventFromQueue() (QueueEvent, error) {
 	}
 
 	return evt, nil
+}
+
+func issueCertificate() {
+
+}
+
+func renewCertificate() {
+
 }
 
 func handleCertificateError(params QueueEvent, err error) {
