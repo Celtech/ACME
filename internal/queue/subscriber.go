@@ -27,7 +27,14 @@ func (q *QueueManager) Subscribe() {
 				evt.Attempt,
 			)
 
-			if err := acme.Run(evt.Domain, evt.ChallengeType); err != nil {
+			var err error = nil
+			if evt.Type == EVENT_ISSUE {
+				err = acme.Run(evt.Domain, evt.ChallengeType)
+			} else if evt.Type == EVENT_RENEW {
+				err = acme.Renew([]string{evt.Domain}, evt.ChallengeType)
+			}
+
+			if err != nil {
 				handleCertificateError(evt, err)
 			} else {
 				updateRequest(evt, model.STATUS_ISSUED)
@@ -51,14 +58,6 @@ func (q *QueueManager) extractEventFromQueue() (QueueEvent, error) {
 	}
 
 	return evt, nil
-}
-
-func issueCertificate() {
-
-}
-
-func renewCertificate() {
-
 }
 
 func handleCertificateError(params QueueEvent, err error) {
