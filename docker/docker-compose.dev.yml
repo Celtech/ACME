@@ -30,7 +30,7 @@ services:
       - acme-server
     volumes:
       - acme-mariadb:/var/lib/mysql
-      - ./conf/mariadb.cnf:/etc/mysql/my.cnf
+      - ./conf/mariadb/mariadb.cnf:/etc/mysql/my.cnf
     environment:
       TZ: "America/Chicago"
       MYSQL_ALLOW_EMPTY_PASSWORD: "no"
