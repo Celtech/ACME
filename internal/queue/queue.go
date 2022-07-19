@@ -18,9 +18,9 @@ type QueueManager struct {
 }
 
 const (
-	EVENT_REQUEST = "request"
-	EVENT_RENEW   = "renew"
-	EVENT_REVOKE  = "revoke"
+	EVENT_ISSUE  = "issue"
+	EVENT_RENEW  = "renew"
+	EVENT_REVOKE = "revoke"
 )
 
 type QueueEvent struct {

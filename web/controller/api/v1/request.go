@@ -112,7 +112,7 @@ func (requestController RequestController) CreateNew(c *gin.Context) {
 		RequestId:     requestModel.Id,
 		Domain:        requestModel.Domain,
 		ChallengeType: requestModel.ChallengeType,
-		Type:          queue.EVENT_REQUEST,
+		Type:          queue.EVENT_ISSUE,
 		Attempt:       1,
 		CreatedAt:     time.Now(),
 	}
