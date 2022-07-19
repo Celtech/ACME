@@ -3,6 +3,7 @@ package acme
 import (
 	"crypto"
 	"crypto/x509"
+	"fmt"
 	"github.com/Celtech/ACME/config"
 	"github.com/Celtech/ACME/internal/acme/certificate"
 	lego "github.com/Celtech/ACME/internal/acme/client"
@@ -30,7 +31,7 @@ func Renew(domains []string, challengeType string) error {
 	}
 
 	if account.Registration == nil {
-		log.Fatalf("Account %s is not registered. Use 'run' to register a new account.\n", account.Email)
+		return fmt.Errorf("Account %s is not registered. Use 'run' to register a new account.\n", account.Email)
 	}
 
 	certsStorage := NewCertificatesStorage()
@@ -46,7 +47,7 @@ func renewForDomains(domains []string, client *lego.Client, certsStorage *Certif
 	// as web servers would not be able to work with a combined file.
 	certificates, err := certsStorage.ReadCertificate(domain, ".crt")
 	if err != nil {
-		log.Fatalf("Error while loading the certificate for domain %s\n\t%v", domain, err)
+		return fmt.Errorf("Error while loading the certificate for domain %s\n\t%v", domain, err)
 	}
 
 	cert := certificates[0]
@@ -72,7 +73,7 @@ func renewForDomains(domains []string, client *lego.Client, certsStorage *Certif
 	if reusePrivateKey {
 		keyBytes, errR := certsStorage.ReadFile(domain, ".key")
 		if errR != nil {
-			log.Fatalf("Error while loading the private key for domain %s\n\t%v", domain, errR)
+			return fmt.Errorf("Error while loading the private key for domain %s\n\t%v", domain, errR)
 		}
 
 		privateKey, errR = certcrypto.ParsePEMPrivateKey(keyBytes)
@@ -102,7 +103,7 @@ func renewForDomains(domains []string, client *lego.Client, certsStorage *Certif
 	}
 	certRes, err := client.Certificate.Obtain(request)
 	if err != nil {
-		log.Fatal(err)
+		return fmt.Errorf("could not obtain certificates:\n\t%v", err)
 	}
 
 	// TODO: call a renewal hook here to trigger some action to happen
@@ -117,7 +118,7 @@ func needRenewal(x509Cert *x509.Certificate, domain string, days int) bool {
 	if days >= 0 {
 		notAfter := int(time.Until(x509Cert.NotAfter).Hours() / 24.0)
 		if notAfter > days {
-			log.Printf("[%s] The certificate expires in %d days, the number of days defined to perform the renewal is %d: no renewal.",
+			log.Infof("[%s] The certificate expires in %d days, the number of days defined to perform the renewal is %d: no renewal.",
 				domain, notAfter, days)
 			return false
 		}
