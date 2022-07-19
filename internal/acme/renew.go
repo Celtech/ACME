@@ -14,7 +14,7 @@ import (
 	"time"
 )
 
-func renew(domains []string, challengeType string) error {
+func Renew(domains []string, challengeType string) error {
 	accountsStorage, err := NewAccountsStorage()
 	if err != nil {
 		return err
