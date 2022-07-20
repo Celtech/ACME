@@ -2,6 +2,7 @@ package model
 
 import (
 	"github.com/Celtech/ACME/web/database"
+	"gorm.io/gorm"
 	"time"
 )
 
@@ -20,22 +21,24 @@ type RequestCreate struct {
 
 // Request is a database struct that is used to store certificate requests in the database
 type Request struct {
-	Id            int       `json:"id" gorm:"primary_key;auto_increment;not null" example:"1"`
-	Domain        string    `json:"domain" binding:"required" gorm:"not null" example:"mydomain.com"`
-	ChallengeType string    `json:"challengeType" binding:"required" gorm:"not null" example:"challenge-http"`
-	Status        string    `json:"status" gorm:"not_null" example:"pending"`
-	CreatedAt     time.Time `json:"createdAt" example:"2022-06-06 12:03:10.0"`
-	UpdatedAt     time.Time `json:"updatedAt" example:"2022-06-06 12:03:10.0"`
+	Id            int            `json:"id" gorm:"primary_key;auto_increment;not null" example:"1"`
+	Domain        string         `json:"domain" binding:"required" gorm:"not null" example:"mydomain.com"`
+	ChallengeType string         `json:"challengeType" binding:"required" gorm:"not null" example:"challenge-http"`
+	Status        string         `json:"status" gorm:"not_null" example:"pending"`
+	CertificateID int            `json:"certificateId" gorm:"not_null" example:"1"`
+	CreatedAt     time.Time      `json:"createdAt" example:"2022-06-06 12:03:10.0"`
+	UpdatedAt     time.Time      `json:"updatedAt" example:"2022-06-06 12:03:10.0"`
+	DeletedAt     gorm.DeletedAt `json:"deletedAt" gorm:"index" example:"2022-06-06 12:03:10.0"`
 }
 
 // GetAll is a method used for getting all certificate requests from the database
 // in a paginated array
 func (h *Request) GetAll(pagination Pagination) ([]Request, error) {
-	requests := []Request{}
+	var requests []Request
 
 	offset := (pagination.Page - 1) * pagination.Limit
-	queryBuider := database.GetDB().Limit(pagination.Limit).Offset(offset).Order(pagination.Sort)
-	res := queryBuider.Model(&Request{}).Find(&requests)
+	queryBuilder := database.GetDB().Limit(pagination.Limit).Offset(offset).Order(pagination.Sort)
+	res := queryBuilder.Model(&Request{}).Find(&requests)
 
 	return requests, res.Error
 }
