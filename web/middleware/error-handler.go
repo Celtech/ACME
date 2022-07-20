@@ -24,6 +24,9 @@ var (
 	ErrorInvalidJWTToken = errors.New("the supplied JWT token was expired or not a valid JWT token")
 
 	ErrorBadPathParameter = errors.New("the supplied path parameter is invalid, did you supply a valid integer?")
+
+	ErrorFailedToCreateRequest     = errors.New("there was a saving your certificate request")
+	ErrorFailedToCreateCertificate = errors.New("there was a saving your certificate association")
 )
 
 // ErrorResponse is a struct used for openapi documentation generation
@@ -69,6 +72,18 @@ func ErrorHandler() gin.HandlerFunc {
 					"status":  http.StatusNotFound,
 					"errors":  ParseError(errors.New("entity not found")), // we don't like gorms default message
 					"message": fmt.Sprintf("The requested entity %s could not be found", c.Param("id")),
+				})
+			case ErrorFailedToCreateRequest:
+				c.JSON(http.StatusBadRequest, gin.H{
+					"status":  http.StatusNotFound,
+					"errors":  ParseError(err.Err),
+					"message": "Failed to save certificate request to the database",
+				})
+			case ErrorFailedToCreateCertificate:
+				c.JSON(http.StatusBadRequest, gin.H{
+					"status":  http.StatusNotFound,
+					"errors":  ParseError(err.Err),
+					"message": "Failed to create certificate association for the request",
 				})
 			default:
 				c.JSON(http.StatusBadRequest, gin.H{
