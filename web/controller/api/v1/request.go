@@ -90,20 +90,27 @@ func (requestController RequestController) GetAll(c *gin.Context) {
 // @Router /request [post]
 func (requestController RequestController) CreateNew(c *gin.Context) {
 	var requestModel = new(model.Request)
+
 	if err := c.ShouldBindJSON(&requestModel); err != nil {
 		c.Error(err)
 		c.Abort()
 		return
 	}
+
+	var certificateModel = new(model.Certificate)
+	if err := certificateModel.CreateFromRequest(requestModel); err != nil {
+		log.Error(err)
+		c.Error(middleware.ErrorFailedToCreateCertificate)
+		c.Abort()
+		return
+	}
+
 	requestModel.Status = model.STATUS_PENDING
+	requestModel.CertificateID = certificateModel.Id
 
 	if err := requestModel.Save(); err != nil {
 		log.Error(err)
-		c.JSON(http.StatusBadRequest, gin.H{
-			"status":  http.StatusBadRequest,
-			"message": "Something went wrong",
-			"error":   err.Error(),
-		})
+		c.Error(middleware.ErrorFailedToCreateRequest)
 		c.Abort()
 		return
 	}
@@ -120,7 +127,8 @@ func (requestController RequestController) CreateNew(c *gin.Context) {
 	if err := queue.QueueMgr.Publish(evt); err != nil {
 		log.Errorf("error publishing certificate request for domain %s to queue, %v", requestModel.Domain, err)
 
-		c.JSON(400, gin.H{
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status":  http.StatusBadRequest,
 			"message": fmt.Sprintf("error publishing certificate request for domain %s to queue", requestModel.Domain),
 			"error":   err.Error(),
 		})
