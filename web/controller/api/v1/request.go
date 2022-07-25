@@ -84,7 +84,7 @@ func (requestController RequestController) GetAll(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param request body model.RequestCreate true "Certificate Request"
-// @Success 200 {object} model.APIEnvelopeResponse{data=model.Request}
+// @Success 201 {object} model.APIEnvelopeResponse{data=model.Request}
 // @Failure 400 {object} middleware.ErrorResponse
 // @Failure 401 {object} middleware.ErrorResponse
 // @Router /request [post]
