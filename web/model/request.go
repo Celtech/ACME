@@ -25,7 +25,6 @@ type Request struct {
 	Domain        string         `json:"domain" binding:"required" gorm:"not null" example:"mydomain.com"`
 	ChallengeType string         `json:"challengeType" binding:"required" gorm:"not null" example:"challenge-http"`
 	Status        string         `json:"status" gorm:"not_null" example:"pending"`
-	CertificateID int            `json:"certificateId" gorm:"not_null" example:"1"`
 	CreatedAt     time.Time      `json:"createdAt" example:"2022-06-06 12:03:10.0"`
 	UpdatedAt     time.Time      `json:"updatedAt" example:"2022-06-06 12:03:10.0"`
 	DeletedAt     gorm.DeletedAt `json:"deletedAt" gorm:"index" example:"2022-06-06 12:03:10.0"`

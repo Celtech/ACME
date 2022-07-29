@@ -8,7 +8,6 @@ import (
 
 func RunMigrations() {
 	err := database.GetDB().AutoMigrate(
-		&model.Certificate{},
 		&model.Request{},
 		&model.User{},
 	)

@@ -97,16 +97,7 @@ func (requestController RequestController) CreateNew(c *gin.Context) {
 		return
 	}
 
-	var certificateModel = new(model.Certificate)
-	if err := certificateModel.CreateFromRequest(requestModel); err != nil {
-		log.Error(err)
-		c.Error(middleware.ErrorFailedToCreateCertificate)
-		c.Abort()
-		return
-	}
-
 	requestModel.Status = model.STATUS_PENDING
-	requestModel.CertificateID = certificateModel.Id
 
 	if err := requestModel.Save(); err != nil {
 		log.Error(err)
