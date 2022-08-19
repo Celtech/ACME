@@ -113,12 +113,13 @@ to work with the API.
 
 ## Attributions
 
-<p float="left">
-<img src="https://plugins.jetbrains.com/static/versions/22143/jetbrains-simple.svg" alt="drawing" width="100"/>
-<img src="https://github.com/go-acme/lego/raw/master/docs/static/images/lego-logo.min.svg" alt="Lego ACME Logo" width="200"/>
-<img src="docs/img/chargeover.png" alt="Lego ACME Logo" width="300"/>
-</p>
+![Sponsors](docs/img/logos.png)
 
+A special call out to [ChargeOver](https://chargeover.com/go-beyond-billing) 
+for being the reason this project even exists in the first place. If your 
+business runs billing or invoicing through any other platform you would be 
+doing yourself a disservice not checking out ChargeOver! Best in class support, 
+with a team that works with you to maximize your MRR.
 
 This project was made possible by the wonderful developers over at [lego
 acme](https://github.com/go-acme/lego). Lego acme was used as the base
