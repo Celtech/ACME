@@ -1,18 +1,18 @@
-secret: 12345
+secret: abcd1234
 
 server:
   host: 0.0.0.0
   port: 9022
 
 database:
-  host: 127.0.0.1
+  host: rykelabs-acme-mariadb
   port: 3306
-  user: root
+  user: dev
   pass: password
-  name: acme
+  name: acme_dev
 
 redis:
-  host: 127.0.0.1
+  host: rykelabs-acme-redis
   port: 6379
   name: certificate-request
 
