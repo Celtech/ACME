@@ -28,7 +28,7 @@ type Request struct {
 	IssuedAt      *time.Time     `json:"issuedAt" gorm:"default:null" example:"2022-07-06 12:03:10.0"`
 	CreatedAt     time.Time      `json:"createdAt" example:"2022-06-06 12:03:10.0"`
 	UpdatedAt     time.Time      `json:"updatedAt" example:"2022-06-06 12:03:10.0"`
-	DeletedAt     gorm.DeletedAt `json:"deletedAt" gorm:"index" example:"2022-06-06 12:03:10.0"`
+	DeletedAt     gorm.DeletedAt `json:"deletedAt" swaggertype:"primitive,string" gorm:"index" example:"2022-06-06 12:03:10.0"`
 }
 
 // GetAll is a method used for getting all certificate requests from the database
