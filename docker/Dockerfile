@@ -3,7 +3,7 @@ WORKDIR /app
 COPY go.mod go.sum ./
 RUN go get -u github.com/swaggo/swag/cmd/swag && go mod download
 COPY . ./
-RUN swag init --md docs --codeExampleFiles docs/samples && \
+RUN swag init --parseDependency --parseInternal --md docs --codeExampleFiles docs/samples && \
     CGO_ENABLED=0 go build -ldflags="-s -w" -gcflags=all="-l -B" -o /baker-acme
 
 
