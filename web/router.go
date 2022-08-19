@@ -26,16 +26,16 @@ func apiV1Router(router *gin.Engine) {
 		authGroup := v1Group.Group("token")
 		{
 			authController := new(v1.AuthenticationController)
-			authGroup.POST("/", authController.Authenticate)
+			authGroup.POST("", authController.Authenticate)
 		}
 
 		requestGroup := v1Group.Group("request")
 		{
 			requestController := new(v1.RequestController)
 			requestGroup.Use(middleware.AuthorizeJWT())
-			requestGroup.GET("/", requestController.GetAll)
+			requestGroup.GET("", requestController.GetAll)
 			requestGroup.GET("/:id", requestController.GetOne)
-			requestGroup.POST("/", requestController.CreateNew)
+			requestGroup.POST("", requestController.CreateNew)
 		}
 	}
 }
