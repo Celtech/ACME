@@ -3,6 +3,7 @@ package web
 import (
 	"github.com/Celtech/ACME/web/controller"
 	v1 "github.com/Celtech/ACME/web/controller/api/v1"
+	"github.com/Celtech/ACME/web/controller/app"
 	"github.com/Celtech/ACME/web/middleware"
 
 	"github.com/gin-gonic/gin"
@@ -11,6 +12,7 @@ import (
 func configRoutes(router *gin.Engine) {
 	rootRouter(router)
 	apiV1Router(router)
+	appRouter(router)
 }
 
 func rootRouter(router *gin.Engine) {
@@ -18,6 +20,18 @@ func rootRouter(router *gin.Engine) {
 
 	router.StaticFile("/openapi", "./docs/swagger.json")
 	router.GET("/ping", rootController.Ping)
+}
+
+func appRouter(router *gin.Engine) {
+	router.LoadHTMLGlob("./web/views/*")
+	router.Static("/assets", "./web/assets")
+
+	appGroup := router.Group("")
+	{
+		appController := new(app.IndexController)
+		appGroup.GET("", appController.Index)
+		appGroup.GET("/about", appController.About)
+	}
 }
 
 func apiV1Router(router *gin.Engine) {

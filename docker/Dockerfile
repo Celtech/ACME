@@ -4,8 +4,7 @@ COPY go.mod go.sum ./
 RUN go get -u github.com/swaggo/swag/cmd/swag && go mod download
 COPY . ./
 RUN swag init --parseDependency --parseInternal --md docs --codeExampleFiles docs/samples && \
-    CGO_ENABLED=0 go build -ldflags="-s -w" -gcflags=all="-l -B" -o /baker-acme
-
+    CGO_ENABLED=0 go build -ldflags="-s -w -X main.Version=0.0.1" -gcflags=all="-l -B" -o /baker-acme
 
 FROM golang:1.16-alpine AS base
 WORKDIR /app

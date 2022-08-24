@@ -11,6 +11,26 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+var (
+	Version string
+	Date    string
+)
+
+func branding() {
+	log.Infof(`
+   _____ _____ _         _____          _   _  __
+  / ____/ ____| |       / ____|        | | (_)/ _|
+ | (___| (___ | |      | |     ___ _ __| |_ _| |_ _   _
+  \___ \\___ \| |      | |    / _ \ '__| __| |  _| | | |
+  ____) |___) | |____  | |___|  __/ |  | |_| | | | |_| |
+ |_____/_____/|______|  \_____\___|_|   \__|_|_|  \__, |
+                                                   __/ |
+                                                  |___/
+`)
+
+	log.Infof("Starting SSL Certify version %s built on %s", Version, Date)
+}
+
 func init() {
 	var appEnv string
 	if appEnv = os.Getenv("ACME_ENV"); appEnv == "" {
@@ -24,6 +44,8 @@ func init() {
 		FullTimestamp: true,
 		ForceColors:   conf.GetBool("services.logger.color"),
 	})
+
+	branding()
 
 	database.Init()
 	migration.RunMigrations()

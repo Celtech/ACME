@@ -1,0 +1,57 @@
+{{ template "header.html" .}}
+
+<div class="row">
+  <div class="col">
+    <h2 class="display-6">Statistics</h2>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-4 col-lg-2">
+    <div class="card text-bg-primary">
+      <div class="card-body">
+        <h5 class="card-title text-center">Unique Domains</h5>
+        <h6 class="card-text text-center">30</h6>
+      </div>
+    </div>
+  </div>
+  <div class="col-4 col-lg-2">
+    <div class="card text-bg-success">
+      <div class="card-body">
+        <h5 class="card-title text-center">Active Domains</h5>
+        <h6 class="card-text text-center">30</h6>
+      </div>
+    </div>
+  </div>
+  <div class="col-4 col-lg-2">
+    <div class="card text-bg-danger">
+      <div class="card-body">
+        <h5 class="card-title text-center">Renewal Failures</h5>
+        <h6 class="card-text text-center">30</h6>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col">
+    <h2 class="display-6">Secure a new domain</h2>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col">
+    <div class="card">
+      <div class="card-body">
+        <div class="input-group">
+          <span class="input-group-text" id="basic-addon1">https://</span>
+          <input type="text" class="form-control" placeholder="your-domain.com" aria-label="Username" aria-describedby="basic-addon1">
+          <button type="button" class="btn btn-primary">Submit</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{ template "footer.html" .}}
+

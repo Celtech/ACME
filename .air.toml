@@ -7,7 +7,7 @@ tmp_dir = "../tmp"
 
 [build]
 # Just plain old shell command. You could use `make` as well.
-cmd = "CGO_ENABLED=0 go build -ldflags='-s -w' -gcflags=all='-l -B' -o ../baker-acme"
+cmd = "CGO_ENABLED=0 go build -ldflags=\"-s -w -X main.Version=0.0.0-DEV -X 'main.Date=$(date)'\" -gcflags=all='-l -B' -o ../baker-acme"
 # Binary file yields from `cmd`.
 bin = "tmp/app"
 
@@ -17,7 +17,7 @@ full_bin = "../baker-acme start"
 # This log file places in your tmp_dir.
 log = "air_errors.log"
 # Watch these filename extensions.
-include_ext = ["go", "yaml"]
+include_ext = ["go", "yaml", "html", "toml"]
 # Ignore these filename extensions or directories.
 exclude_dir = ["tmp"]
 # It's not necessary to trigger build each time file changes if it's too frequent.
