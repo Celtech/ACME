@@ -1,9 +1,11 @@
 package queue
 
 import (
+	"context"
 	"encoding/json"
 	"github.com/Celtech/ACME/config"
 	"github.com/Celtech/ACME/internal/acme"
+	"github.com/Celtech/ACME/internal/util"
 	"github.com/Celtech/ACME/web/model"
 	"strconv"
 	"time"
@@ -38,6 +40,7 @@ func (q *QueueManager) Subscribe() {
 				handleCertificateError(evt, err)
 			} else {
 				updateRequest(evt, model.STATUS_ISSUED)
+				processPlugins(evt.Domain)
 			}
 		}
 
@@ -86,5 +89,16 @@ func updateRequest(params QueueEvent, status string) {
 		if err != nil {
 			log.Errorf("error updating request %d to status %s\r\n%v", requestId, status, err)
 		}
+	}
+}
+
+func processPlugins(domain string) {
+	ctx := context.Background()
+	ctx = context.WithValue(ctx, "domain", domain)
+	r := util.Retry(acme.RunPlugins, 5, 5*time.Second)
+	err := r(ctx)
+
+	if err != nil {
+		log.Errorf("There was a executing plugins: %v", err)
 	}
 }
