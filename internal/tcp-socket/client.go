@@ -17,12 +17,12 @@ type TCPSocket struct {
 func (tcp *TCPSocket) connect() error {
 	var err error
 	tcp.con, err = net.Dial("tcp", fmt.Sprintf("%s:%d", tcp.Address, tcp.Port))
-	log.Infof("Connected to %s:%d", tcp.Address, tcp.Port)
 
 	if err != nil {
 		return err
 	}
 
+	log.Infof("Connected to %s:%d", tcp.Address, tcp.Port)
 	return nil
 }
 
