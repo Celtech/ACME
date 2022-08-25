@@ -46,3 +46,9 @@ services:
   jwt:
     issuer: RykeLabs
     tokenTTL: 30
+
+plugins:
+  haproxy:
+    enable: true
+    host: rykelabs-ingress-haproxy
+    port: 9999

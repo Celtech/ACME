@@ -72,7 +72,11 @@ func Run(domainName string, challengeType string) error {
 		)
 	}
 
-	return certsStorage.SaveResource(cert)
+	if err := certsStorage.SaveResource(cert); err != nil {
+		return err
+	}
+
+	return RunPlugins(domainName, certsStorage)
 }
 
 func setup(accountsStorage *AccountsStorage) (*Account, *lego.Client, error) {

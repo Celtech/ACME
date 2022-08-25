@@ -29,16 +29,15 @@ const (
 //
 // rootPath:
 //
-//     ./.lego/certificates/
-//          │      └── root certificates directory
-//          └── "path" option
+//	./.lego/certificates/
+//	     │      └── root certificates directory
+//	     └── "path" option
 //
 // archivePath:
 //
-//     ./.lego/archives/
-//          │      └── archived certificates directory
-//          └── "path" option
-//
+//	./.lego/archives/
+//	     │      └── archived certificates directory
+//	     └── "path" option
 type CertificatesStorage struct {
 	rootPath    string
 	archivePath string
@@ -195,11 +194,15 @@ func (s *CertificatesStorage) CheckCrtList(certFileName string, crtList *os.File
 	return 0, nil
 }
 
+func (s *CertificatesStorage) GetCrtListPath() string {
+	return filepath.Join(s.rootPath, "crt-list.txt")
+}
+
 // WriteCrtList will write a newly issued cert to the crt-list.txt file to be used by reverse proxies such as HAProxy
 // Note this will also check to see if the file already exists, if it does, it won't write anything to prevent
 // duplication
 func (s *CertificatesStorage) WriteCrtList(domain string) error {
-	filePath := filepath.Join(s.rootPath, "crt-list.txt")
+	filePath := s.GetCrtListPath()
 	crtList, err := os.OpenFile(filePath, os.O_APPEND|os.O_CREATE|os.O_RDWR, 0644)
 	if err != nil {
 		return err
