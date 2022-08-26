@@ -34,3 +34,6 @@ docker-compose*
 # Command Runners
 Taskfile.yml
 Makefile
+
+# Build
+/build
