@@ -38,6 +38,13 @@ tasks:
         ignore_error: true
     silent: false
 
+  go:build:
+    env:
+      CGO_ENABLED: 0
+    cmds:
+      - go build -ldflags="-s -w" -gcflags=all="-l -B" -o ./build/ssl-certify
+    silent: false
+
   add:user:
     cmds:
       - cmd: docker exec -it rykelabs-acme-app sh -c "/app/baker-acme add {{.CLI_ARGS}}"
