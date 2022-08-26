@@ -10,10 +10,18 @@ tasks:
   docker:start:
     env:
       COMPOSE_TARGET: ""
+      DOCKER_BUILDKIT: 1
     cmds:
       - cmd: docker compose -p acme -f docker/docker-compose.yml -f docker/docker-compose.dev.yml up --build --force-recreate
 
   docker:build:
+    env:
+      DOCKER_BUILDKIT: 1
+    cmds:
+      - cmd: docker build -t git.rykelabs.com:5050/rykelabs/acme-server:latest -f docker/Dockerfile .
+    silent: false
+
+  docker:build:clean:
     cmds:
       - cmd: docker build --no-cache -t git.rykelabs.com:5050/rykelabs/acme-server:latest -f docker/Dockerfile .
     silent: false
@@ -47,7 +55,7 @@ tasks:
 
   add:user:
     cmds:
-      - cmd: docker exec -it rykelabs-acme-app sh -c "/app/baker-acme add {{.CLI_ARGS}}"
+      - cmd: docker exec -it rykelabs-acme-app /app/ssl-certify add {{.CLI_ARGS}}
 
   openapi:
     cmds:
