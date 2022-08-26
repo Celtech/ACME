@@ -1,35 +1,29 @@
 version: '3'
 
 tasks:
-  docker:build:
-    cmds:
-      - cmd: docker build --no-cache -t git.rykelabs.com:5050/rykelabs/acme-server:latest -f docker/Dockerfile .
-    silent: false
-
   docker:dev:
     env:
-        COMPOSE_TARGET: "dev"
+      COMPOSE_TARGET: "dev"
     cmds:
       - cmd: docker compose -p acme -f docker/docker-compose.yml -f docker/docker-compose.dev.yml up --build --force-recreate
 
   docker:start:
     env:
-        COMPOSE_TARGET: ""
+      COMPOSE_TARGET: ""
     cmds:
       - cmd: docker compose -p acme -f docker/docker-compose.yml -f docker/docker-compose.dev.yml up --build --force-recreate
 
-  add:user:
+  docker:build:
     cmds:
-      - cmd: docker exec -it rykelabs-acme-app sh -c "/app/baker-acme add {{.CLI_ARGS}}"
+      - cmd: docker build --no-cache -t git.rykelabs.com:5050/rykelabs/acme-server:latest -f docker/Dockerfile .
+    silent: false
 
   docker:deploy:
     cmds:
       - cmd: docker buildx rm acme_builder # just in case task was exited early by the user
         ignore_error: true
       - cmd: docker buildx create --name acme_builder --use
-        ignore_error: true
       - cmd: docker buildx build --push --platform linux/amd64 -t git.rykelabs.com:5050/rykelabs/acme-server:latest -f docker/Dockerfile .
-        ignore_error: true
       - cmd: docker buildx rm acme_builder
         ignore_error: true
     silent: false
@@ -39,12 +33,14 @@ tasks:
       - cmd: docker buildx rm acme_builder # just in case task was exited early by the user
         ignore_error: true
       - cmd: docker buildx create --name acme_builder --use
-        ignore_error: true
       - cmd: docker buildx build --push --platform linux/amd64 -t timhinz/ssl-testing:latest -f docker/Dockerfile .
-        ignore_error: true
       - cmd: docker buildx rm acme_builder
         ignore_error: true
     silent: false
+
+  add:user:
+    cmds:
+      - cmd: docker exec -it rykelabs-acme-app sh -c "/app/baker-acme add {{.CLI_ARGS}}"
 
   openapi:
     cmds:
