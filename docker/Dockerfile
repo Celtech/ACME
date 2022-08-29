@@ -34,7 +34,7 @@ USER 99:99
 COPY --chown=haproxy:haproxy --chmod=755 --from=builder /ssl-certify /app/ssl-certify
 COPY --chown=haproxy:haproxy --chmod=755 --from=builder /app/config /app/config
 ENTRYPOINT ["/app/ssl-certify"]
-HEALTHCHECK --interval=12s --timeout=12s --start-period=30s \
+HEALTHCHECK --interval=30s --timeout=30s --start-period=30s \
     CMD ["/app/ssl-certify", "ping"]
 CMD ["start"]
 EXPOSE 9022
