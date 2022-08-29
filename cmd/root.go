@@ -8,7 +8,7 @@ import (
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:     "acme",
+	Use:     "ssl-certify",
 	Version: "1.0.0", // When changing, test the -v flag to ensure we didn't break the ascii art
 	Short:   "Thin Let's Encrypt ACME client and challenge server written in go.",
 	Long:    `Thin Let's Encrypt ACME client and challenge server written in go.`,
