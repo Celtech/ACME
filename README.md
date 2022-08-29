@@ -93,6 +93,7 @@ Available Commands:
   completion  Generate the autocompletion script for the specified shell
   hash        Returns a hashed version of a plaintext password
   help        Help about any command
+  ping        Returns the health status of your server
   start       Start the web server
 
 Flags:
