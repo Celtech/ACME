@@ -57,6 +57,8 @@ var startCmd = &cobra.Command{
 			}
 		}()
 
+		log.Infof("SSL Certify v%s built %s", Version, Date)
+
 		con := database.Init()
 		migration.RunMigrations()
 		queue.QueueMgr = queue.NewQueue(config.GetConfig().GetString("redis.name"))
