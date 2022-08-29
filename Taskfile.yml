@@ -17,14 +17,37 @@ tasks:
   docker:build:
     env:
       DOCKER_BUILDKIT: 1
+      BUILD_VERSION: 0.0.0-dev
     cmds:
-      - cmd: docker build -t git.rykelabs.com:5050/rykelabs/acme-server:latest -f docker/Dockerfile .
+      - cmd: |
+             docker build --build-arg BUILD_VERSION=$BUILD_VERSION \
+             --build-arg BUILD_DATE="{{.BUILD_DATE}}" \
+             --build-arg BUILD_VCS_REF="{{.BUILD_VCS_REF}}" \
+             -t git.rykelabs.com:5050/rykelabs/acme-server:latest \
+             -f docker/Dockerfile .
+    vars:
+      BUILD_DATE:
+        sh: date
+      BUILD_VCS_REF:
+        sh: git rev-parse --short HEAD
     silent: false
 
   docker:build:clean:
+    env:
+      BUILD_VERSION: 0.0.0-dev
     cmds:
-      - cmd: docker build --no-cache -t git.rykelabs.com:5050/rykelabs/acme-server:latest -f docker/Dockerfile .
-    silent: false
+      - cmd: |
+             docker build --no-cache \
+             --build-arg BUILD_VERSION=$BUILD_VERSION \
+             --build-arg BUILD_DATE="{{.BUILD_DATE}}" \
+             --build-arg BUILD_VCS_REF="{{.BUILD_VCS_REF}}" \
+             -t git.rykelabs.com:5050/rykelabs/acme-server:latest \
+             -f docker/Dockerfile .
+    vars:
+      BUILD_DATE:
+        sh: date
+      BUILD_VCS_REF:
+        sh: git rev-parse --short HEAD
 
   docker:deploy:
     cmds:
@@ -36,21 +59,11 @@ tasks:
         ignore_error: true
     silent: false
 
-  docker:deploy:test:
-    cmds:
-      - cmd: docker buildx rm acme_builder # just in case task was exited early by the user
-        ignore_error: true
-      - cmd: docker buildx create --name acme_builder --use
-      - cmd: docker buildx build --push --platform linux/amd64 -t timhinz/ssl-testing:latest -f docker/Dockerfile .
-      - cmd: docker buildx rm acme_builder
-        ignore_error: true
-    silent: false
-
   go:build:
     env:
       CGO_ENABLED: 0
     cmds:
-      - go build -ldflags="-s -w" -gcflags=all="-l -B" -o ./build/ssl-certify
+      - go build -ldflags="-s -w -X github.com/Celtech/ACME/cmd.Version=0.0.0-dev" -gcflags=all="-l -B" -o ./build/ssl-certify
     silent: false
 
   add:user:
