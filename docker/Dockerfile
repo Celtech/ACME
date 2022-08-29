@@ -38,7 +38,7 @@ ARG BUILD_DATE
 ARG BUILD_VCS_REF
 LABEL org.label-schema.schema-version="1.0"
 LABEL org.label-schema.build-date=$BUILD_DATE
-LABEL org.label-schema.name="ssl-certify/ssl-certify"
+LABEL org.label-schema.name="sslcertify/sslcertify"
 LABEL org.label-schema.description="Thin Let's Encrypt ACME client and challenge server written in go."
 LABEL org.label-schema.url="https://sslcertify.com/"
 LABEL org.label-schema.vcs-url="https://github.com/Celtech/ssl-certify"
