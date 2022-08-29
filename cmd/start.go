@@ -2,6 +2,8 @@ package cmd
 
 import (
 	"github.com/Celtech/ACME/internal/queue"
+	"github.com/Celtech/ACME/web/database"
+	"github.com/Celtech/ACME/web/database/migration"
 	"os"
 	"os/signal"
 	"syscall"
@@ -26,8 +28,7 @@ var startCmd = &cobra.Command{
 		var done = make(chan struct{})
 		var gracefulStop = make(chan os.Signal)
 
-		signal.Notify(gracefulStop, syscall.SIGTERM)
-		signal.Notify(gracefulStop, syscall.SIGINT)
+		signal.Notify(gracefulStop, syscall.SIGTERM, syscall.SIGINT, syscall.SIGHUP, syscall.SIGQUIT, syscall.SIGKILL)
 		go func() {
 			// wait for our os signal to stop the app
 			// on the graceful stop channel
@@ -42,18 +43,26 @@ var startCmd = &cobra.Command{
 			// wait for word back if we finished or not
 			select {
 			case <-time.After(30 * time.Second):
+				log.Info("graceful shutdown timed out, forcefully exiting")
+
 				// timeout after 30 seconds waiting for app to finish,
 				// our application should Exit(1)
 				returnCode <- 1
 			case <-done:
+				log.Info("graceful shutdown complete")
+
 				// if we got a message on done, we finished, so end app
 				// our application should Exit(0)
 				returnCode <- 0
 			}
 		}()
 
+		con := database.Init()
+		migration.RunMigrations()
+		queue.QueueMgr = queue.NewQueue(config.GetConfig().GetString("redis.name"))
+
 		srv := web.Serve(config.GetConfig())
-		queue.QueueMgr.Subscribe()
+		go queue.QueueMgr.Subscribe()
 
 		<-finishUP
 		log.Info("attempting graceful shutdown")
@@ -61,9 +70,31 @@ var startCmd = &cobra.Command{
 		// 1 second less than force shutdown time
 		ctx, cancel := ctx.WithTimeout(ctx.Background(), 29*time.Second)
 		defer cancel()
-		srv.Shutdown(ctx)
 
-		log.Info("graceful shutdown complete")
+		// Shut down queue
+		log.Info("gracefully closing redis")
+		err := queue.QueueMgr.Close()
+		if err != nil {
+			log.Fatalf("graceful shutdown of redis failed: %+v", err)
+		}
+
+		// Shut down database
+		log.Info("gracefully closing mariadb")
+		if db, err := con.DB(); err == nil {
+			// We can't log here so if the close command errors, we can't really
+			// do anything about it. We have to let it exit forcefully.
+			err := db.Close()
+			if err != nil {
+				log.Fatalf("graceful shutdown of mariadb failed: %+v", err)
+			}
+		}
+
+		// Shut down web server
+		log.Info("gracefully closing web server")
+		err = srv.Shutdown(ctx)
+		if err != nil {
+			log.Fatalf("graceful shutdown of web server failed: %+v", err)
+		}
 
 		done <- struct{}{}
 		os.Exit(<-returnCode)

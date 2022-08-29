@@ -23,17 +23,27 @@ Username is preferred to be an email but anything may
 be used. Note when using the API, this will be referred
 to as an email regardless of whether you used an email
 or not.`,
-	Example: "baker-acme add support@example.com mySuperSecurePassword123",
+	Example: "ssl-certify add support@example.com mySuperSecurePassword123",
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 2 {
 			log.Error("username or password argument is missing")
 			return
 		}
+
+		con := database.Init()
+		db, _ := con.DB()
+		defer func() {
+			err := db.Close()
+			if err != nil {
+				log.Panicf("failed to close database connection: %v", err)
+			}
+		}()
+
 		var user = model.User{
 			Email:    args[0],
 			Password: args[1],
 		}
-		res := database.GetDB().Create(&user)
+		res := con.Create(&user)
 		if res.Error != nil {
 			log.Error(res.Error)
 		} else {

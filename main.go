@@ -3,9 +3,6 @@ package main
 import (
 	"github.com/Celtech/ACME/cmd"
 	"github.com/Celtech/ACME/config"
-	"github.com/Celtech/ACME/internal/queue"
-	"github.com/Celtech/ACME/web/database"
-	"github.com/Celtech/ACME/web/database/migration"
 	"os"
 
 	log "github.com/sirupsen/logrus"
@@ -24,10 +21,6 @@ func init() {
 		FullTimestamp: true,
 		ForceColors:   conf.GetBool("services.logger.color"),
 	})
-
-	database.Init()
-	migration.RunMigrations()
-	queue.QueueMgr = queue.NewQueue(conf.GetString("redis.name"))
 }
 
 // @title           ACME API
