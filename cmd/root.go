@@ -1,15 +1,21 @@
 package cmd
 
 import (
+	"fmt"
+	"math"
 	"os"
+	"strings"
 
 	"github.com/spf13/cobra"
 )
 
+var Version string
+var Date string
+
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:     "ssl-certify",
-	Version: "1.0.0", // When changing, test the -v flag to ensure we didn't break the ascii art
+	Version: Version,
 	Short:   "Thin Let's Encrypt ACME client and challenge server written in go.",
 	Long:    `Thin Let's Encrypt ACME client and challenge server written in go.`,
 }
@@ -21,7 +27,7 @@ func Execute() {
 	rootCmd.SetVersionTemplate(
 		"\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m" + "┌──────────────────────────────────┐\n" +
 			"\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231mr\x1b[0m\x1b[38;5;231m:\x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m" + "│                                  │\n" +
-			"\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231ms\x1b[0m\x1b[38;5;231mX\x1b[0m\x1b[38;5;231m.\x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m.\x1b[0m\x1b[38;5;231mi\x1b[0m\x1b[38;5;231mr\x1b[0m\x1b[38;5;231mi\x1b[0m\x1b[38;5;231mi\x1b[0m\x1b[38;5;231m:\x1b[0m\x1b[38;5;231m.\x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;153m3\x1b[0m\x1b[38;5;117mG\x1b[0m\x1b[38;5;81mS\x1b[0m\x1b[38;5;81mS\x1b[0m\x1b[38;5;153m3\x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m" + "│            ACME v{{.Version}}           │\n" +
+			"\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231ms\x1b[0m\x1b[38;5;231mX\x1b[0m\x1b[38;5;231m.\x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m.\x1b[0m\x1b[38;5;231mi\x1b[0m\x1b[38;5;231mr\x1b[0m\x1b[38;5;231mi\x1b[0m\x1b[38;5;231mi\x1b[0m\x1b[38;5;231m:\x1b[0m\x1b[38;5;231m.\x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;153m3\x1b[0m\x1b[38;5;117mG\x1b[0m\x1b[38;5;81mS\x1b[0m\x1b[38;5;81mS\x1b[0m\x1b[38;5;153m3\x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m" + getVersionString() + "\n" +
 			"\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;189mA\x1b[0m\x1b[38;5;117mH\x1b[0m\x1b[38;5;81mS\x1b[0m\x1b[38;5;81mS\x1b[0m\x1b[38;5;81mG\x1b[0m\x1b[38;5;117mM\x1b[0m\x1b[38;5;188mA\x1b[0m\x1b[38;5;152m5\x1b[0m\x1b[38;5;117mh\x1b[0m\x1b[38;5;81mH\x1b[0m\x1b[38;5;81mG\x1b[0m\x1b[38;5;81mS\x1b[0m\x1b[38;5;81mS\x1b[0m\x1b[38;5;81mS\x1b[0m\x1b[38;5;81mS\x1b[0m\x1b[38;5;81mS\x1b[0m\x1b[38;5;81mS\x1b[0m\x1b[38;5;81mG\x1b[0m\x1b[38;5;81mG\x1b[0m\x1b[38;5;75mS\x1b[0m\x1b[38;5;81m#\x1b[0m\x1b[38;5;81m#\x1b[0m\x1b[38;5;75mS\x1b[0m\x1b[38;5;188m2\x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m" + "│   Made with 💙 for all my devs   │\n" +
 			"\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;188m2\x1b[0m\x1b[38;5;81mS\x1b[0m\x1b[38;5;81m9\x1b[0m\x1b[38;5;81m#\x1b[0m\x1b[38;5;81mS\x1b[0m\x1b[38;5;81m#\x1b[0m\x1b[38;5;75mS\x1b[0m\x1b[38;5;81m#\x1b[0m\x1b[38;5;81m9\x1b[0m\x1b[38;5;81m9\x1b[0m\x1b[38;5;81m9\x1b[0m\x1b[38;5;81m9\x1b[0m\x1b[38;5;81m#\x1b[0m\x1b[38;5;81m#\x1b[0m\x1b[38;5;81m#\x1b[0m\x1b[38;5;81m#\x1b[0m\x1b[38;5;81m#\x1b[0m\x1b[38;5;81m9\x1b[0m\x1b[38;5;81m9\x1b[0m\x1b[38;5;81m9\x1b[0m\x1b[38;5;81m9\x1b[0m\x1b[38;5;81m#\x1b[0m\x1b[38;5;81m#\x1b[0m\x1b[38;5;81mG\x1b[0m\x1b[38;5;117mh\x1b[0m\x1b[38;5;188mX\x1b[0m\x1b[38;5;231m5\x1b[0m\x1b[38;5;231m5\x1b[0m\x1b[38;5;231mi\x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m" + "│                                  │\n" +
 			"\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;195mX\x1b[0m\x1b[38;5;153m3\x1b[0m\x1b[38;5;75mM\x1b[0m\x1b[38;5;81m#\x1b[0m\x1b[38;5;81m#\x1b[0m\x1b[38;5;81m#\x1b[0m\x1b[38;5;81m#\x1b[0m\x1b[38;5;81m9\x1b[0m\x1b[38;5;81m#\x1b[0m\x1b[38;5;81m#\x1b[0m\x1b[38;5;152m9\x1b[0m\x1b[38;5;188mB\x1b[0m\x1b[38;5;188m&\x1b[0m\x1b[38;5;188m&\x1b[0m\x1b[38;5;188mB\x1b[0m\x1b[38;5;152mB\x1b[0m\x1b[38;5;116m#\x1b[0m\x1b[38;5;81m#\x1b[0m\x1b[38;5;81m#\x1b[0m\x1b[38;5;81m9\x1b[0m\x1b[38;5;81m9\x1b[0m\x1b[38;5;81m9\x1b[0m\x1b[38;5;81m9\x1b[0m\x1b[38;5;111m#\x1b[0m\x1b[38;5;188mB\x1b[0m\x1b[38;5;195m&\x1b[0m\x1b[38;5;189m&\x1b[0m\x1b[38;5;188mB\x1b[0m\x1b[38;5;188m#\x1b[0m\x1b[38;5;188mh\x1b[0m\x1b[38;5;231mr\x1b[0m\x1b[38;5;231m \x1b[0m\x1b[38;5;231m \x1b[0m" + " \\  ───────────────────────────────┘\n" +
@@ -49,4 +55,15 @@ func Execute() {
 	if err != nil {
 		os.Exit(1)
 	}
+}
+
+func getVersionString() string {
+	versionStringLen := len(fmt.Sprintf("SSL Certify v%s", Version))
+	stringDif := 34 - versionStringLen // 36 char total - 2 characters for the │'s
+
+	return fmt.Sprintf(
+		"│%sSSL Certify v{{.Version}}%s│",
+		strings.Repeat(" ", int(math.Floor(float64(stringDif/2)))),
+		strings.Repeat(" ", int(math.Ceil(float64(stringDif/2)))),
+	)
 }
