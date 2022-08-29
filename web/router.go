@@ -4,8 +4,8 @@ import (
 	"github.com/Celtech/ACME/web/controller"
 	v1 "github.com/Celtech/ACME/web/controller/api/v1"
 	"github.com/Celtech/ACME/web/middleware"
-
 	"github.com/gin-gonic/gin"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 func configRoutes(router *gin.Engine) {
@@ -17,6 +17,7 @@ func rootRouter(router *gin.Engine) {
 	rootController := new(controller.RootController)
 
 	router.StaticFile("/openapi", "./docs/swagger.json")
+	router.GET("/metrics", gin.WrapH(promhttp.Handler()))
 	router.GET("/ping", rootController.Ping)
 }
 
