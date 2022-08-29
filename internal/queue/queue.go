@@ -47,3 +47,7 @@ func NewQueue(queue string) *QueueManager {
 		queue:  queue,
 	}
 }
+
+func (q *QueueManager) Close() error {
+	return q.client.Close()
+}
