@@ -7,13 +7,13 @@ tmp_dir = "../tmp"
 
 [build]
 # Just plain old shell command. You could use `make` as well.
-cmd = "CGO_ENABLED=0 go build -ldflags='-s -w' -gcflags=all='-l -B' -o ../baker-acme"
+cmd = "CGO_ENABLED=0 go build -ldflags='-s -w -X github.com/Celtech/ACME/cmd.Version=0.0.0-dev' -gcflags=all='-l -B' -o ../ssl-certify"
 # Binary file yields from `cmd`.
 bin = "tmp/app"
 
 # Customize binary.
 # This is how you start to run your application. Since my application will works like CLI, so to run it, like to make a CLI call.
-full_bin = "../baker-acme start"
+full_bin = "../ssl-certify start"
 # This log file places in your tmp_dir.
 log = "air_errors.log"
 # Watch these filename extensions.
