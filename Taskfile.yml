@@ -50,14 +50,21 @@ tasks:
         sh: git rev-parse --short HEAD
 
   docker:deploy:
+    env:
+      BUILD_VERSION: 0.0.0-dev
     cmds:
       - cmd: docker buildx rm acme_builder # just in case task was exited early by the user
         ignore_error: true
       - cmd: docker buildx create --name acme_builder --use
-      - cmd: docker buildx build --push --platform linux/amd64 -t git.rykelabs.com:5050/rykelabs/acme-server:latest -f docker/Dockerfile .
+      - cmd: docker buildx build --push --platform linux/amd64 --build-arg BUILD_VERSION=$BUILD_VERSION --build-arg BUILD_DATE="{{.BUILD_DATE}}" --build-arg BUILD_VCS_REF="{{.BUILD_VCS_REF}}" -t git.rykelabs.com:5050/rykelabs/acme-server:latest -f docker/Dockerfile .
       - cmd: docker buildx rm acme_builder
         ignore_error: true
     silent: false
+    vars:
+      BUILD_DATE:
+        sh: date
+      BUILD_VCS_REF:
+        sh: git rev-parse --short HEAD
 
   go:build:
     env:

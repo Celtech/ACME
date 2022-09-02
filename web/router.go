@@ -37,6 +37,7 @@ func apiV1Router(router *gin.Engine) {
 			requestGroup.GET("", requestController.GetAll)
 			requestGroup.GET("/:id", requestController.GetOne)
 			requestGroup.POST("", requestController.CreateNew)
+			requestGroup.POST("/:id", requestController.Renew)
 		}
 	}
 }

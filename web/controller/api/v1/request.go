@@ -134,3 +134,51 @@ func (requestController RequestController) CreateNew(c *gin.Context) {
 		})
 	}
 }
+
+// @BasePath /api/v1
+
+// @Summary Renew a certificate request
+// @Schemes
+// @Description Renew a certificate request
+// @Tags Request
+// @Accept json
+// @Produce json
+// @Param id path int true "Certificate Request ID"
+// @Param request body model.RequestCreate true "Certificate Request"
+// @Success 201 {object} model.APIEnvelopeResponse{data=model.Request}
+// @Failure 400 {object} middleware.ErrorResponse
+// @Failure 401 {object} middleware.ErrorResponse
+// @Router /request/{id} [post]
+func (requestController RequestController) Renew(c *gin.Context) {
+	var requestModel = new(model.Request)
+	if c.Param("id") == "" {
+		c.Error(middleware.ErrorBadPathParameter)
+		c.Abort()
+		return
+	}
+
+	if err := requestModel.GetByID(c.Param("id")); err != nil {
+		c.Error(err)
+		c.Abort()
+		return
+	}
+
+	evt := queue.QueueEvent{
+		RequestId:     requestModel.Id,
+		Domain:        requestModel.Domain,
+		ChallengeType: requestModel.ChallengeType,
+		Type:          queue.EVENT_RENEW,
+		Attempt:       1,
+		CreatedAt:     time.Now(),
+	}
+
+	if err := queue.QueueMgr.Publish(evt); err != nil {
+		log.Errorf("error publishing certificate renewal request for domain %s to queue, %v", requestModel.Domain, err)
+
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status":  http.StatusBadRequest,
+			"message": fmt.Sprintf("error publishing certificate renewal request for domain %s to queue", requestModel.Domain),
+			"error":   err.Error(),
+		})
+	}
+}
