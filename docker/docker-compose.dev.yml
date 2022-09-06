@@ -10,8 +10,6 @@ services:
       args:
         BUILD_VERSION: 0.0.0-dev
     depends_on:
-      mariadb:
-        condition: service_healthy
       redis:
         condition: service_healthy
     ports:
