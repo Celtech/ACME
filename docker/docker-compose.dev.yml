@@ -23,29 +23,6 @@ services:
     volumes:
       - ../:/app/code
 
-  mariadb:
-    image: mariadb:10.3.17
-    container_name: rykelabs-acme-mariadb
-    ports:
-      - "3306:3306"
-    networks:
-      - acme-server
-    volumes:
-      - acme-mariadb:/var/lib/mysql
-      - ./conf/mariadb/mariadb.cnf:/etc/mysql/my.cnf
-    environment:
-      TZ: "America/Chicago"
-      MYSQL_ALLOW_EMPTY_PASSWORD: "no"
-      MYSQL_USER: 'dev'
-      MYSQL_ROOT_PASSWORD: "password"
-      MYSQL_PASSWORD: 'password'
-      MYSQL_DATABASE: 'acme_dev'
-    healthcheck:
-      test: mysqladmin ping -h 127.0.0.1 --user=root --password=$$MYSQL_ROOT_PASSWORD --silent
-      interval: 10s
-      retries: 3
-      timeout: 20s
-
   redis:
     image: redis:6.2.6-alpine3.15
     container_name: rykelabs-acme-redis
@@ -57,9 +34,6 @@ services:
       test: [ "CMD", "redis-cli","ping" ]
       interval: 10s
       retries: 3
-
-volumes:
-  acme-mariadb:
 
 networks:
   acme-server:
