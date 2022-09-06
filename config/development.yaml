@@ -6,14 +6,6 @@ server:
   host: 0.0.0.0
   port: 9022
 
-# your mariadb database credentials
-database:
-  host: rykelabs-acme-mariadb
-  port: 3306
-  user: dev
-  pass: password
-  name: acme_dev
-
 # your redis credentials
 redis:
   host: rykelabs-acme-redis

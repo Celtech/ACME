@@ -4,13 +4,6 @@ server:
   host: 0.0.0.0
   port: 9022
 
-database:
-  host: rykelabs-acme-mariadb
-  port: 3306
-  user: dev
-  pass: password
-  name: acme_dev
-
 redis:
   host: rykelabs-acme-redis
   port: 6379

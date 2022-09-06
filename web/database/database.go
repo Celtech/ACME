@@ -1,26 +1,24 @@
 package database
 
 import (
-	"fmt"
 	"github.com/Celtech/ACME/config"
+	"github.com/glebarez/sqlite"
+	"path/filepath"
 
 	log "github.com/sirupsen/logrus"
-	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
 var db *gorm.DB
 
 func Init() *gorm.DB {
-	conf := config.GetConfig()
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
-		conf.GetString("database.user"),
-		conf.GetString("database.pass"),
-		conf.GetString("database.host"),
-		conf.GetString("database.port"),
-		conf.GetString("database.name"),
-	)
-	d, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	basePath := config.GetConfig().GetString("acme.dataPath")
+	if len(basePath) == 0 {
+		basePath = "/data"
+	}
+
+	dbFilePath := filepath.Join(basePath, "ssl-certify.db")
+	d, err := gorm.Open(sqlite.Open(dbFilePath), &gorm.Config{})
 
 	if err != nil {
 		log.Fatalf("Failed to connect to database: %v", err.Error())
