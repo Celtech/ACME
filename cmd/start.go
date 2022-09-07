@@ -81,7 +81,7 @@ var startCmd = &cobra.Command{
 		}
 
 		// Shut down database
-		log.Info("gracefully closing mariadb")
+		log.Info("gracefully closing database connection")
 		if db, err := con.DB(); err == nil {
 			// We can't log here so if the close command errors, we can't really
 			// do anything about it. We have to let it exit forcefully.
