@@ -13,7 +13,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-const SEQUENTIAL_WAIT_TIME = 30 // in seconds
+const SEQUENTIAL_WAIT_TIME = 60 // in seconds
 
 func (q *QueueManager) Subscribe() {
 	for {
