@@ -7,6 +7,7 @@ import (
 	"github.com/Celtech/ACME/internal/acme"
 	"github.com/Celtech/ACME/internal/util"
 	"github.com/Celtech/ACME/web/model"
+	"github.com/prometheus/client_golang/prometheus"
 	"strconv"
 	"time"
 
@@ -15,7 +16,13 @@ import (
 
 const SEQUENTIAL_WAIT_TIME = 60 // in seconds
 
+var certificateRequestRetryCounter *prometheus.CounterVec
+var certificateRequestFailureCounter *prometheus.CounterVec
+var certificateRequestIssuedCounter *prometheus.CounterVec
+
 func (q *QueueManager) Subscribe() {
+	setupMetrics()
+
 	for {
 		evt, err := q.extractEventFromQueue()
 
@@ -39,6 +46,10 @@ func (q *QueueManager) Subscribe() {
 			if err != nil {
 				handleCertificateError(evt, err)
 			} else {
+				issuedOn := time.Now()
+				renews := issuedOn.Add(90 * (time.Hour * 24))
+				certificateRequestIssuedCounter.WithLabelValues(evt.Domain, issuedOn.Format(time.RFC3339), renews.Format(time.RFC3339)).Inc()
+
 				updateRequest(evt, model.STATUS_ISSUED)
 				processPlugins(evt.Domain)
 			}
@@ -66,9 +77,13 @@ func (q *QueueManager) extractEventFromQueue() (QueueEvent, error) {
 func handleCertificateError(params QueueEvent, err error) {
 	rateLimit := config.GetConfig().GetInt("acme.retryLimit")
 	if params.Attempt >= rateLimit {
+		certificateRequestFailureCounter.WithLabelValues(params.Domain).Inc()
+
 		log.Errorf("error issuing certificate for %s on attempt %d of %d. Max attempts reached, marking as failed.\r\n%v", params.Domain, params.Attempt, rateLimit, err)
 		updateRequest(params, model.STATUS_ERROR)
 	} else {
+		certificateRequestRetryCounter.WithLabelValues(params.Domain).Inc()
+
 		log.Errorf("error issuing certificate for %s on attempt %d of %d. Re-queueing.\r\n%v", params.Domain, params.Attempt, rateLimit, err)
 		params.Attempt++
 		if err := QueueMgr.Publish(params); err != nil {
@@ -101,4 +116,34 @@ func processPlugins(domain string) {
 	if err != nil {
 		log.Errorf("There was a executing plugins: %v", err)
 	}
+}
+
+func setupMetrics() {
+	certificateRequestRetryCounter = prometheus.NewCounterVec(
+		prometheus.CounterOpts{
+			Name: "ssl_certify_certificate_request_retry_count", // metric name
+			Help: "Count of number of retried certificate requests.",
+		},
+		[]string{"domain"}, // labels
+	)
+
+	certificateRequestFailureCounter = prometheus.NewCounterVec(
+		prometheus.CounterOpts{
+			Name: "ssl_certify_certificate_request_fail_count", // metric name
+			Help: "Count of number of failed certificate requests, this does not include retries.",
+		},
+		[]string{"domain"}, // labels
+	)
+
+	certificateRequestIssuedCounter = prometheus.NewCounterVec(
+		prometheus.CounterOpts{
+			Name: "ssl_certify_certificate_request_issued_count", // metric name
+			Help: "Count of number of successfully issued certificate requests.",
+		},
+		[]string{"domain", "issued", "renews"}, // labels
+	)
+
+	prometheus.MustRegister(certificateRequestRetryCounter)
+	prometheus.MustRegister(certificateRequestFailureCounter)
+	prometheus.MustRegister(certificateRequestIssuedCounter)
 }
