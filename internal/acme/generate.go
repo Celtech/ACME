@@ -4,6 +4,7 @@ import (
 	"fmt"
 	acmeConfig "github.com/Celtech/ACME/config"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/Celtech/ACME/internal/acme/certificate"
@@ -151,9 +152,18 @@ func createNonExistingFolder(path string) error {
 func obtainCertificate(domainName string, client *lego.Client) (*certificate.Resource, error) {
 	log.Infof("requesting certificate for: %s", domainName)
 
+	// Support for wildcard certificates
+	var domainNames []string
+	if strings.HasPrefix(domainName, "*.") {
+		domainNames = append(domainNames, domainName)
+		domainNames = append(domainNames, strings.TrimPrefix(domainName, "*."))
+	} else {
+		domainNames = append(domainNames, domainName)
+	}
+
 	// obtain a certificate, generating a new private key
 	request := certificate.ObtainRequest{
-		Domains:                        []string{domainName},
+		Domains:                        domainNames,
 		Bundle:                         false,
 		MustStaple:                     false,
 		AlwaysDeactivateAuthorizations: false,
