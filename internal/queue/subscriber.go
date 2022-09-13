@@ -100,6 +100,10 @@ func updateRequest(params QueueEvent, status string) {
 		log.Errorf("error fetching request %d\r\n%v", requestId, err)
 	} else {
 		requestModel.Status = status
+		if status == model.STATUS_ISSUED {
+			issuedAt := time.Now()
+			requestModel.IssuedAt = &issuedAt
+		}
 		err := requestModel.Update()
 		if err != nil {
 			log.Errorf("error updating request %d to status %s\r\n%v", requestId, status, err)

@@ -4,6 +4,7 @@ import (
 	"github.com/Celtech/ACME/internal/queue"
 	"github.com/Celtech/ACME/web/database"
 	"github.com/Celtech/ACME/web/database/migration"
+	"github.com/Celtech/ACME/web/service"
 	"os"
 	"os/signal"
 	"syscall"
@@ -65,6 +66,7 @@ var startCmd = &cobra.Command{
 
 		srv := web.Serve(config.GetConfig())
 		go queue.QueueMgr.Subscribe()
+		go service.ProcessRenewals()
 
 		<-finishUP
 		log.Info("attempting graceful shutdown")

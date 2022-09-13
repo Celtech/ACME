@@ -1,6 +1,8 @@
 package model
 
 import (
+	"fmt"
+	"github.com/Celtech/ACME/config"
 	"github.com/Celtech/ACME/web/database"
 	"gorm.io/gorm"
 	"time"
@@ -31,14 +33,27 @@ type Request struct {
 	DeletedAt     gorm.DeletedAt `json:"deletedAt" swaggertype:"primitive,string" gorm:"index" example:"2022-06-06 12:03:10.0"`
 }
 
-// GetAll is a method used for getting all certificate requests from the database
-// in a paginated array
-func (h *Request) GetAll(pagination Pagination) ([]Request, error) {
+// GetAllExpiringSoon is a method used for getting all certificate requests from the database
+// that are 1 month from expiration
+func (h *Request) GetAllExpiringSoon() ([]Request, error) {
 	var requests []Request
 
-	offset := (pagination.Page - 1) * pagination.Limit
-	queryBuilder := database.GetDB().Limit(pagination.Limit).Offset(offset).Order(pagination.Sort)
-	res := queryBuilder.Model(&Request{}).Find(&requests)
+	renewalDays := config.GetConfig().GetInt("acme.renewal.days")
+	if renewalDays == 0 || renewalDays > 90 {
+		renewalDays = 30
+	}
+
+	query := fmt.Sprintf("issued_at <= DATE('now','-%d days')", 90-renewalDays)
+	res := database.GetDB().Where(query).Find(&requests)
+
+	return requests, res.Error
+}
+
+// GetAll is a method used for getting all certificate requests from the database
+// in a paginated array
+func (h *Request) GetAll() ([]Request, error) {
+	var requests []Request
+	res := database.GetDB().Find(&requests)
 
 	return requests, res.Error
 }

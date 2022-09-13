@@ -64,9 +64,8 @@ func (requestController RequestController) GetOne(c *gin.Context) {
 // @Failure 401 {object} middleware.ErrorResponse
 // @Router /request [get]
 func (requestController RequestController) GetAll(c *gin.Context) {
-	pagination := model.GeneratePaginationFromRequest(c)
 	requestModel := new(model.Request)
-	res, _ := requestModel.GetAll(pagination)
+	res, _ := requestModel.GetAll()
 
 	c.JSON(http.StatusOK, gin.H{
 		"status":  http.StatusOK,
