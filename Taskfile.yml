@@ -77,6 +77,10 @@ tasks:
     cmds:
       - cmd: docker exec -it rykelabs-acme-app /app/ssl-certify add {{.CLI_ARGS}}
 
+  tester:
+    cmds:
+      - cmd: docker exec -it rykelabs-acme-app /app/ssl-certify test
+
   openapi:
     cmds:
       - cmd: swag init --md docs --codeExampleFiles docs/samples

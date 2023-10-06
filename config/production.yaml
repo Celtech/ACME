@@ -43,5 +43,10 @@ services:
 plugins:
   haproxy:
     enable: true
-    host: rykelabs-ingress-haproxy
-    port: 9999
+    servers:
+      - host: docker-ingress01.chargeover.ingress
+        port: 9999
+      - host: docker-ingress02.chargeover.ingress
+        port: 9999
+      - host: docker-ingress03.chargeover.ingress
+        port: 9999

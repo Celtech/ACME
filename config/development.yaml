@@ -50,5 +50,10 @@ services:
 plugins:
   haproxy:
     enable: true
-    host: host.docker.internal
-    port: 9999
+    servers:
+      - host: 10.15.9.11
+        port: 9999
+      - host: 10.15.9.12
+        port: 9999
+      - host: 10.15.9.13
+        port: 9999
