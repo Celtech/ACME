@@ -26,6 +26,7 @@ var (
 	ErrorBadPathParameter = errors.New("the supplied path parameter is invalid, did you supply a valid integer?")
 
 	ErrorFailedToCreateRequest     = errors.New("there was a saving your certificate request")
+	ErrorCapitalsNotAllowed     = errors.New("capital letters are not allowed")
 	ErrorFailedToCreateCertificate = errors.New("there was a saving your certificate association")
 )
 
