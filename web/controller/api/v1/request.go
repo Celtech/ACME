@@ -7,6 +7,7 @@ import (
 	"github.com/Celtech/ACME/web/model"
 	"net/http"
 	"time"
+	"unicode"
 
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
@@ -89,6 +90,14 @@ func (requestController RequestController) GetAll(c *gin.Context) {
 // @Router /request [post]
 func (requestController RequestController) CreateNew(c *gin.Context) {
 	var requestModel = new(model.Request)
+
+	for _, char := range requestModel.Domain {
+		if unicode.IsUpper(char) {
+			c.Error(middleware.ErrorCapitalsNotAllowed)
+			c.Abort()
+			return
+		}
+	}
 
 	if err := c.ShouldBindJSON(&requestModel); err != nil {
 		c.Error(err)
