@@ -48,8 +48,8 @@ LABEL org.label-schema.version=$BUILD_VERSION
 LABEL org.label-schema.docker.cmd="docker run -p 9022:9022 -d ssl-certify/ssl-certify"
 WORKDIR /app
 USER 99:99
-COPY --chown=haproxy:haproxy --chmod=755 --from=builder /ssl-certify /app/ssl-certify
-COPY --chown=haproxy:haproxy --chmod=755 --from=builder /app/config /app/config
+COPY --chown=99:99 --chmod=755 --from=builder /ssl-certify /app/ssl-certify
+COPY --chown=99:99 --chmod=755 --from=builder /app/config /app/config
 ENTRYPOINT ["/app/ssl-certify"]
 HEALTHCHECK --interval=30s --timeout=30s --start-period=30s \
     CMD ["/app/ssl-certify", "ping"]
