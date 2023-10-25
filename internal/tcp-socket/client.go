@@ -5,6 +5,7 @@ import (
 	"fmt"
 	log "github.com/sirupsen/logrus"
 	"net"
+	"strings"
 	"time"
 )
 
@@ -43,14 +44,22 @@ func (tcp *TCPSocket) Write(command string) error {
 	}
 	defer tcp.close()
 
-	log.Infof("Attempting to write message to %s:%d: %s", tcp.Address, tcp.Port, command)
+	if strings.Contains(command, "BEGIN CERTIFICATE") {
+		log.Infof("Attempting to write message to %s:%d: %s", tcp.Address, tcp.Port, "BEGIN CERTIFICATE.... [CENSORED]")
+	} else {
+		log.Infof("Attempting to write message to %s:%d: %s", tcp.Address, tcp.Port, command)
+	}
 	go tcp.reader()
 
 	if _, err := tcp.con.Write([]byte(command + "\n")); err != nil {
 		return fmt.Errorf("error writing command: \n\t%v", err)
 	}
 
-	log.Infof("Message written to %s:%d: %s", tcp.Address, tcp.Port, command)
+	if strings.Contains(command, "BEGIN CERTIFICATE") {
+		log.Infof("Attempting to write message to %s:%d: %s", tcp.Address, tcp.Port, "BEGIN CERTIFICATE.... [CENSORED]")
+	} else {
+		log.Infof("Message written to %s:%d: %s", tcp.Address, tcp.Port, command)
+	}
 	time.Sleep(time.Second * 2)
 	return nil
 }
