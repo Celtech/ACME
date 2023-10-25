@@ -37,6 +37,14 @@ func (tcp *TCPSocket) close() error {
 	return nil
 }
 
+func truncateAfterSubstring(input, target string, offset int) string {
+	index := strings.Index(input, target)
+	if index == -1 {
+		return input
+	}
+	return input[:index+len(target)+offset]
+}
+
 func (tcp *TCPSocket) Write(command string) error {
 	err := tcp.connect()
 	if err != nil {
@@ -45,7 +53,8 @@ func (tcp *TCPSocket) Write(command string) error {
 	defer tcp.close()
 
 	if strings.Contains(command, "BEGIN CERTIFICATE") {
-		log.Infof("Attempting to write message to %s:%d: %s", tcp.Address, tcp.Port, "BEGIN CERTIFICATE.... [CENSORED]")
+		truncatedString := truncateAfterSubstring(command, "-----BEGIN CERTIFICATE-----", 30)
+		log.Infof("Attempting to write message to %s:%d: %s", tcp.Address, tcp.Port, truncatedString)
 	} else {
 		log.Infof("Attempting to write message to %s:%d: %s", tcp.Address, tcp.Port, command)
 	}
@@ -56,7 +65,8 @@ func (tcp *TCPSocket) Write(command string) error {
 	}
 
 	if strings.Contains(command, "BEGIN CERTIFICATE") {
-		log.Infof("Attempting to write message to %s:%d: %s", tcp.Address, tcp.Port, "BEGIN CERTIFICATE.... [CENSORED]")
+		truncatedString := truncateAfterSubstring(command, "-----BEGIN CERTIFICATE-----", 30)
+		log.Infof("Attempting to write message to %s:%d: %s", tcp.Address, tcp.Port, truncatedString)
 	} else {
 		log.Infof("Message written to %s:%d: %s", tcp.Address, tcp.Port, command)
 	}
