@@ -39,7 +39,7 @@ ARG BUILD_VCS_REF
 LABEL org.label-schema.schema-version="1.0"
 LABEL org.label-schema.build-date=$BUILD_DATE
 LABEL org.label-schema.name="sslcertify/sslcertify"
-LABEL org.label-schema.description="Thin Let's Encrypt ACME client and challenge server written in go."
+LABEL org.label-schema.description="Thin Lets Encrypt ACME client and challenge server written in go."
 LABEL org.label-schema.url="https://sslcertify.com/"
 LABEL org.label-schema.vcs-url="https://github.com/Celtech/ssl-certify"
 LABEL org.label-schema.vcs-ref=$BUILD_VCS_REF
@@ -48,8 +48,8 @@ LABEL org.label-schema.version=$BUILD_VERSION
 LABEL org.label-schema.docker.cmd="docker run -p 9022:9022 -d ssl-certify/ssl-certify"
 WORKDIR /app
 USER 99:99
-COPY --chown=haproxy:haproxy --chmod=755 --from=builder /ssl-certify /app/ssl-certify
-COPY --chown=haproxy:haproxy --chmod=755 --from=builder /app/config /app/config
+COPY --chown=99:99 --chmod=755 --from=builder /ssl-certify /app/ssl-certify
+COPY --chown=99:99 --chmod=755 --from=builder /app/config /app/config
 ENTRYPOINT ["/app/ssl-certify"]
 HEALTHCHECK --interval=30s --timeout=30s --start-period=30s \
     CMD ["/app/ssl-certify", "ping"]
