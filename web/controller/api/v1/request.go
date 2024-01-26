@@ -190,3 +190,36 @@ func (requestController RequestController) Renew(c *gin.Context) {
 		})
 	}
 }
+
+// @Summary Delete a certificate request
+// @Schemes
+// @Description Delete one certificate request by certificate request ID
+// @Tags Request
+// @Accept json
+// @Produce json
+// @Param id path int true "Certificate Request ID"
+// @Success 200 {object} model.APIEnvelopeResponse{data=model.Request}
+// @Failure 400 {object} middleware.ErrorResponse
+// @Failure 401 {object} middleware.ErrorResponse
+// @Failure 404 {object} middleware.ErrorResponse
+// @Router /request/{id} [delete]
+func (requestController RequestController) DeleteOne(c *gin.Context) {
+	var requestModel = new(model.Request)
+	if c.Param("id") == "" {
+		c.Error(middleware.ErrorBadPathParameter)
+		c.Abort()
+		return
+	}
+
+	if err := requestModel.DeleteByID(c.Param("id")); err != nil {
+		c.Error(err)
+		c.Abort()
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"status":  http.StatusOK,
+		"message": "Delete one certificate request",
+		"data":    "OK",
+	})
+}
