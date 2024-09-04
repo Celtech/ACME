@@ -23,7 +23,7 @@ tasks:
              docker build --build-arg BUILD_VERSION=$BUILD_VERSION \
              --build-arg BUILD_DATE="{{.BUILD_DATE}}" \
              --build-arg BUILD_VCS_REF="{{.BUILD_VCS_REF}}" \
-             -t git.rykelabs.com:5050/rykelabs/acme-server:latest \
+             -t registry.chargeover.com/rykelabs/acme-server:latest \
              -f docker/Dockerfile .
     vars:
       BUILD_DATE:
@@ -41,7 +41,7 @@ tasks:
              --build-arg BUILD_VERSION=$BUILD_VERSION \
              --build-arg BUILD_DATE="{{.BUILD_DATE}}" \
              --build-arg BUILD_VCS_REF="{{.BUILD_VCS_REF}}" \
-             -t git.rykelabs.com:5050/rykelabs/acme-server:latest \
+             -t registry.chargeover.com/rykelabs/acme-server:latest \
              -f docker/Dockerfile .
     vars:
       BUILD_DATE:
@@ -56,7 +56,7 @@ tasks:
       - cmd: docker buildx rm acme_builder # just in case task was exited early by the user
         ignore_error: true
       - cmd: docker buildx create --name acme_builder --use
-      - cmd: docker buildx build --push --platform linux/amd64 --build-arg BUILD_VERSION=$BUILD_VERSION --build-arg BUILD_DATE="{{.BUILD_DATE}}" --build-arg BUILD_VCS_REF="{{.BUILD_VCS_REF}}" -t git.rykelabs.com:5050/rykelabs/acme-server:latest -f docker/Dockerfile .
+      - cmd: docker buildx build --push --platform linux/amd64 --build-arg BUILD_VERSION=$BUILD_VERSION --build-arg BUILD_DATE="{{.BUILD_DATE}}" --build-arg BUILD_VCS_REF="{{.BUILD_VCS_REF}}" -t registry.chargeover.com/rykelabs/acme-server:latest -f docker/Dockerfile .
       - cmd: docker buildx rm acme_builder
         ignore_error: true
     silent: false

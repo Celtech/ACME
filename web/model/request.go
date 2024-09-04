@@ -64,6 +64,12 @@ func (h *Request) GetByID(id string) error {
 	return res.Error
 }
 
+// DeleteByID is a method used to delete one certificate request by its ID
+func (h *Request) DeleteByID(id string) error {
+	res := database.GetDB().Delete(&Request{}, id)
+	return res.Error
+}
+
 // Save is a method used to save a NEW certificate request to the database.
 // If you need to update one instead, use the Update method.
 func (h *Request) Save() error {

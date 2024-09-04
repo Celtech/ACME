@@ -29,7 +29,7 @@ func init() {
 // @description.markdown
 
 // @license.name  MIT
-// @license.url   https://git.rykelabs.com/rykelabs/acme-server/-/blob/main/LICENSE.md
+// @license.url   https://git.chargeover.com/rykelabs/acme-server/-/blob/main/LICENSE.md
 
 // @host      acme.chargeover.com:9022
 // @BasePath  /api/v1
