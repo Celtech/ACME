@@ -46,9 +46,7 @@ func (q *QueueManager) Subscribe() {
 			if err != nil {
 				handleCertificateError(evt, err)
 			} else {
-				issuedOn := time.Now()
-				renews := issuedOn.Add(90 * (time.Hour * 24))
-				certificateRequestIssuedCounter.WithLabelValues(evt.Domain, issuedOn.Format(time.RFC3339), renews.Format(time.RFC3339)).Inc()
+				certificateRequestIssuedCounter.WithLabelValues(evt.Domain).Inc()
 
 				updateRequest(evt, model.STATUS_ISSUED)
 				processPlugins(evt.Domain)
@@ -144,7 +142,7 @@ func setupMetrics() {
 			Name: "ssl_certify_certificate_request_issued_count", // metric name
 			Help: "Count of number of successfully issued certificate requests.",
 		},
-		[]string{"domain", "issued", "renews"}, // labels
+		[]string{"domain"}, // labels
 	)
 
 	prometheus.MustRegister(certificateRequestRetryCounter)
