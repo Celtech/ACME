@@ -38,6 +38,7 @@ func apiV1Router(router *gin.Engine) {
 			requestGroup.GET("/:id", requestController.GetOne)
 			requestGroup.POST("", requestController.CreateNew)
 			requestGroup.POST("/:id", requestController.Renew)
+			requestGroup.DELETE("/:id", requestController.DeleteOne)
 		}
 	}
 }
