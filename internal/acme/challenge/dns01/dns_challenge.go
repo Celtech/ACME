@@ -125,14 +125,17 @@ func (c *Challenge) Solve(authz acme.Authorization) error {
 	case challenge.ProviderTimeout:
 		timeout, interval = provider.Timeout()
 	default:
-		timeout, interval = DefaultPropagationTimeout, DefaultPollingInterval
+		timeout, interval = DefaultPropagationTimeout, 60*time.Second
+		//default:
+		//	timeout, interval = DefaultPropagationTimeout, DefaultPollingInterval
 	}
 
 	log.WithFields(log.Fields{
 		"domain": domain,
 	}).Infof("acme: Checking DNS record propagation using %+v", recursiveNameservers)
 
-	time.Sleep(interval)
+	//time.Sleep(interval)
+	time.Sleep(60 * time.Second)
 
 	err = wait.For("propagation", timeout, interval, func() (bool, error) {
 		stop, errP := c.preCheck.call(domain, fqdn, value)
