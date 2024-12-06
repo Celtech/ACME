@@ -58,7 +58,7 @@ func renewForDomains(domains []string, client *lego.Client, certsStorage *Certif
 	}
 
 	if !needRenewal(cert, domain, renewalDays) {
-		return nil
+		return fmt.Errorf("renewal not needed for domain %s", domain)
 	}
 
 	// This is just meant to be informal for the user.
