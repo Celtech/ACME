@@ -132,12 +132,16 @@ func (s *CertificatesStorage) SaveResource(certRes *certificate.Resource) error 
 func (s *CertificatesStorage) ReadResource(domain string) certificate.Resource {
 	raw, err := s.ReadFile(domain, ".json")
 	if err != nil {
-		log.Errorf("error while loading the meta data for domain %s\n\t%v", domain, err)
+		log.WithFields(log.Fields{
+			"domain": domain,
+		}).Errorf("error while loading the meta data for domain %s\n\t%v", domain, err)
 	}
 
 	var resource certificate.Resource
 	if err = json.Unmarshal(raw, &resource); err != nil {
-		log.Errorf("error while marshaling the meta data for domain %s\n\t%v", domain, err)
+		log.WithFields(log.Fields{
+			"domain": domain,
+		}).Errorf("error while marshaling the meta data for domain %s\n\t%v", domain, err)
 	}
 
 	return resource

@@ -150,7 +150,9 @@ func createNonExistingFolder(path string) error {
 }
 
 func obtainCertificate(domainName string, client *lego.Client) (*certificate.Resource, error) {
-	log.Infof("requesting certificate for: %s", domainName)
+	log.WithFields(log.Fields{
+		"domain": domainName,
+	}).Infof("requesting certificate for: %s", domainName)
 
 	// Support for wildcard certificates
 	var domainNames []string

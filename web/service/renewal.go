@@ -31,9 +31,13 @@ func ProcessRenewals() {
 			}
 
 			if err := queue.QueueMgr.Publish(evt); err != nil {
-				log.Errorf("error publishing certificate renewal request for domain %s to queue, %v", requestModel.Domain, err)
+				log.WithFields(log.Fields{
+					"domain": requestModel.Domain,
+				}).Errorf("error publishing certificate renewal request for domain %s to queue, %v", requestModel.Domain, err)
 			} else {
-				log.Infof("Sent certificate renewal request for %s to queue", requestModel.Domain)
+				log.WithFields(log.Fields{
+					"domain": requestModel.Domain,
+				}).Infof("Sent certificate renewal request for %s to queue", requestModel.Domain)
 			}
 		}
 

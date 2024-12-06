@@ -432,7 +432,9 @@ func (c *Certifier) Renew(certRes Resource, bundle, mustStaple bool, preferredCh
 
 	// This is just meant to be informal for the user.
 	timeLeft := x509Cert.NotAfter.Sub(time.Now().UTC())
-	log.Infof("[%s] acme: Trying renewal with %d hours remaining", certRes.Domain, int(timeLeft.Hours()))
+	log.WithFields(log.Fields{
+		"domain": certRes.Domain,
+	}).Infof("[%s] acme: Trying renewal with %d hours remaining", certRes.Domain, int(timeLeft.Hours()))
 
 	// We always need to request a new certificate to renew.
 	// Start by checking to see if the certificate was based off a CSR,
@@ -611,7 +613,9 @@ func sanitizeDomain(domains []string) []string {
 	for _, domain := range domains {
 		sanitizedDomain, err := idna.ToASCII(domain)
 		if err != nil {
-			log.Infof("skip domain %q: unable to sanitize (punnycode): %v", domain, err)
+			log.WithFields(log.Fields{
+				"domain": domain,
+			}).Infof("skip domain %q: unable to sanitize (punnycode): %v", domain, err)
 		} else {
 			sanitizedDomains = append(sanitizedDomains, sanitizedDomain)
 		}

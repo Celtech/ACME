@@ -77,15 +77,21 @@ func handleCertificateError(params QueueEvent, err error) {
 	if params.Attempt >= rateLimit {
 		certificateRequestFailureCounter.WithLabelValues(params.Domain).Inc()
 
-		log.Errorf("error issuing certificate for %s on attempt %d of %d. Max attempts reached, marking as failed.\r\n%v", params.Domain, params.Attempt, rateLimit, err)
+		log.WithFields(log.Fields{
+			"domain": params.Domain,
+		}).Errorf("error issuing certificate for %s on attempt %d of %d. Max attempts reached, marking as failed.\r\n%v", params.Domain, params.Attempt, rateLimit, err)
 		updateRequest(params, model.STATUS_ERROR)
 	} else {
 		certificateRequestRetryCounter.WithLabelValues(params.Domain).Inc()
 
-		log.Errorf("error issuing certificate for %s on attempt %d of %d. Re-queueing.\r\n%v", params.Domain, params.Attempt, rateLimit, err)
+		log.WithFields(log.Fields{
+			"domain": params.Domain,
+		}).Errorf("error issuing certificate for %s on attempt %d of %d. Re-queueing.\r\n%v", params.Domain, params.Attempt, rateLimit, err)
 		params.Attempt++
 		if err := QueueMgr.Publish(params); err != nil {
-			log.Errorf("error publishing certificate request for domain %s to queue, %v", params.Domain, err)
+			log.WithFields(log.Fields{
+				"domain": params.Domain,
+			}).Errorf("error publishing certificate request for domain %s to queue, %v", params.Domain, err)
 		}
 	}
 }

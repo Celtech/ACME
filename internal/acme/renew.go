@@ -63,7 +63,9 @@ func renewForDomains(domains []string, client *lego.Client, certsStorage *Certif
 
 	// This is just meant to be informal for the user.
 	timeLeft := cert.NotAfter.Sub(time.Now().UTC())
-	log.Infof("[%s] acme: Trying renewal with %d hours remaining", domain, int(timeLeft.Hours()))
+	log.WithFields(log.Fields{
+		"domain": domain,
+	}).Infof("[%s] acme: Trying renewal with %d hours remaining", domain, int(timeLeft.Hours()))
 
 	certDomains := certcrypto.ExtractDomains(cert)
 
@@ -118,7 +120,9 @@ func needRenewal(x509Cert *x509.Certificate, domain string, days int) bool {
 	if days >= 0 {
 		notAfter := int(time.Until(x509Cert.NotAfter).Hours() / 24.0)
 		if notAfter > days {
-			log.Infof("[%s] The certificate expires in %d days, the number of days defined to perform the renewal is %d: no renewal.",
+			log.WithFields(log.Fields{
+				"domain": domain,
+			}).Infof("[%s] The certificate expires in %d days, the number of days defined to perform the renewal is %d: no renewal.",
 				domain, notAfter, days)
 			return false
 		}

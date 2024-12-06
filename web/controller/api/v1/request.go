@@ -124,7 +124,9 @@ func (requestController RequestController) CreateNew(c *gin.Context) {
 	}
 
 	if err := queue.QueueMgr.Publish(evt); err != nil {
-		log.Errorf("error publishing certificate request for domain %s to queue, %v", requestModel.Domain, err)
+		log.WithFields(log.Fields{
+			"domain": requestModel.Domain,
+		}).Errorf("error publishing certificate request for domain %s to queue, %v", requestModel.Domain, err)
 
 		c.JSON(http.StatusBadRequest, gin.H{
 			"status":  http.StatusBadRequest,
@@ -181,7 +183,9 @@ func (requestController RequestController) Renew(c *gin.Context) {
 	}
 
 	if err := queue.QueueMgr.Publish(evt); err != nil {
-		log.Errorf("error publishing certificate renewal request for domain %s to queue, %v", requestModel.Domain, err)
+		log.WithFields(log.Fields{
+			"domain": requestModel.Domain,
+		}).Errorf("error publishing certificate renewal request for domain %s to queue, %v", requestModel.Domain, err)
 
 		c.JSON(http.StatusBadRequest, gin.H{
 			"status":  http.StatusBadRequest,
