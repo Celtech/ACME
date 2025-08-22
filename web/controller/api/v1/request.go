@@ -145,7 +145,7 @@ func (requestController RequestController) CreateNew(c *gin.Context) {
 
 // @BasePath /api/v1
 
-// @Summary Renew a certificate request
+// @Summary Renew a certificate requests
 // @Schemes
 // @Description Renew a certificate request
 // @Tags Request
