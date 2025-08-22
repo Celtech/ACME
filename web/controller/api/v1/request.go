@@ -17,7 +17,7 @@ type RequestController struct{}
 
 // @BasePath /api/v1
 
-// @Summary Fetch a certificate request
+// @Summary Fetch a certificate requests
 // @Schemes
 // @Description Fetch one certificate request by certificate request ID
 // @Tags Request
